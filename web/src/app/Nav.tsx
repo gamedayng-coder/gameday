@@ -17,12 +17,20 @@ export default function Nav() {
         </Link>
         <div className="flex items-center gap-4">
           {status === "loading" ? null : session ? (
-            <Link
-              href="/profile"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-            >
-              {session.user?.name ?? session.user?.email}
-            </Link>
+            <>
+              <Link
+                href="/admin/sports"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Sports Admin
+              </Link>
+              <Link
+                href="/profile"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                {session.user?.name ?? session.user?.email}
+              </Link>
+            </>
           ) : (
             <>
               <Link
