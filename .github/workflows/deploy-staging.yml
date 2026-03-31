@@ -1,33 +1,33 @@
-name: Deploy to Railway (staging)
+name: Deploy to Vercel (staging)
 
-# Railway deploys automatically via its GitHub integration when this workflow
-# completes successfully. No CLI or token needed here — Railway watches main
-# branch pushes via the GitHub App connected in the Railway dashboard.
+# Vercel deploys automatically via its GitHub App — no secrets or CLI needed here.
 #
-# Setup (one-time, in Railway dashboard):
-#   Service → Settings → Source → Connect GitHub repo
-#   → gamedayng-coder/gameday, root dir: web, branch: main
+# One-time setup:
+#   1. Go to vercel.com → "Add New Project"
+#   2. Import gamedayng-coder/gameday from GitHub
+#   3. Set Root Directory to: web
+#   4. Vercel auto-detects Next.js — click Deploy
 #
-# This workflow just signals Railway that CI has passed and a deploy is safe.
+# After that, Vercel handles everything:
+#   - Production deploy on every push to main → gameday.vercel.app (or custom domain)
+#   - Preview deploy on every pull request → unique preview URL per PR
+#
+# This workflow is a no-op placeholder. It exists so the deploy step is
+# visible in the GitHub Actions tab alongside CI, making the pipeline
+# easy to reason about.
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-info:
     runs-on: ubuntu-latest
-    needs: []
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Trigger Railway deploy
+      - name: Deployment handled by Vercel GitHub App
         run: |
-          curl -s -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK }}" \
-            -H "Content-Type: application/json" \
-            -d '{}' \
-            --fail-with-body
-        # RAILWAY_DEPLOY_HOOK: copy from Railway → Service → Settings → Deploy Triggers → Add Trigger
-        # It looks like: https://backboard.railway.app/webhooks/deploy/xxxxxxxx
+          echo "Vercel is connected to this repo and deploys automatically."
+          echo "Check https://vercel.com/dashboard for deploy status and preview URLs."
