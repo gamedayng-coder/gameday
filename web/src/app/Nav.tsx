@@ -31,6 +31,12 @@ export default function Nav() {
                 Twitter
               </Link>
               <Link
+                href="/admin/linkedin"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                LinkedIn
+              </Link>
+              <Link
                 href="/profile"
                 className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
               >

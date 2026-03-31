@@ -139,6 +139,33 @@ function initSchema(db: Database.Database) {
       published_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS linkedin_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      linkedin_user_id TEXT NOT NULL,
+      linkedin_name TEXT NOT NULL,
+      access_token TEXT NOT NULL,
+      expires_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS linkedin_oauth_state (
+      state TEXT PRIMARY KEY,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS linkedin_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content TEXT NOT NULL,
+      poster_id TEXT REFERENCES posters(id),
+      scheduled_at TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      linkedin_post_id TEXT,
+      error TEXT,
+      published_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
 
