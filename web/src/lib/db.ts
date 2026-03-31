@@ -96,6 +96,20 @@ function initSchema(db: Database.Database) {
       message TEXT,
       synced_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS posters (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      fixture_id INTEGER REFERENCES sports_fixtures(id),
+      week_start TEXT,
+      status TEXT NOT NULL DEFAULT 'draft',
+      image_path TEXT,
+      error TEXT,
+      generated_at TEXT,
+      approved_at TEXT,
+      published_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
 
