@@ -1,5 +1,15 @@
 name: Deploy to Railway (staging)
 
+# Railway deploys automatically via its GitHub integration when this workflow
+# completes successfully. No CLI or token needed here — Railway watches main
+# branch pushes via the GitHub App connected in the Railway dashboard.
+#
+# Setup (one-time, in Railway dashboard):
+#   Service → Settings → Source → Connect GitHub repo
+#   → gamedayng-coder/gameday, root dir: web, branch: main
+#
+# This workflow just signals Railway that CI has passed and a deploy is safe.
+
 on:
   push:
     branches: [main]
@@ -8,18 +18,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Only deploy after CI passes
     needs: []
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to Railway
-        working-directory: web
-        run: railway up --service ${{ secrets.RAILWAY_SERVICE_POSTER }} --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      - name: Trigger Railway deploy
+        run: |
+          curl -s -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            --fail-with-body
+        # RAILWAY_DEPLOY_HOOK: copy from Railway → Service → Settings → Deploy Triggers → Add Trigger
+        # It looks like: https://backboard.railway.app/webhooks/deploy/xxxxxxxx
