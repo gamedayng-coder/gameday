@@ -110,6 +110,35 @@ function initSchema(db: Database.Database) {
       published_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS twitter_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      twitter_user_id TEXT NOT NULL,
+      twitter_username TEXT NOT NULL,
+      access_token TEXT NOT NULL,
+      refresh_token TEXT,
+      expires_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS twitter_oauth_state (
+      state TEXT PRIMARY KEY,
+      code_verifier TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS twitter_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content TEXT NOT NULL,
+      poster_id TEXT REFERENCES posters(id),
+      scheduled_at TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      tweet_id TEXT,
+      error TEXT,
+      published_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
 
