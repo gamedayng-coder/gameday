@@ -13,7 +13,7 @@ export default function Nav() {
           href="/"
           className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm"
         >
-          Media Platform
+          GameDay Media
         </Link>
         <div className="flex items-center gap-4">
           {status === "loading" ? null : session ? (

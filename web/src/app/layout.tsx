@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Media Platform",
+  title: "GameDay Media",
   description: "Online and social media communications platform",
 };
 
