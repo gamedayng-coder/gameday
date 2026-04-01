@@ -217,6 +217,29 @@ function initSchema(db: Database.Database) {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  // Add engagement metrics columns (idempotent — SQLite throws if column exists, so we ignore those errors)
+  const metricsAlterations = [
+    "ALTER TABLE twitter_posts ADD COLUMN likes INTEGER DEFAULT 0",
+    "ALTER TABLE twitter_posts ADD COLUMN retweets INTEGER DEFAULT 0",
+    "ALTER TABLE twitter_posts ADD COLUMN replies INTEGER DEFAULT 0",
+    "ALTER TABLE twitter_posts ADD COLUMN impressions INTEGER DEFAULT 0",
+    "ALTER TABLE twitter_posts ADD COLUMN metrics_updated_at TEXT",
+    "ALTER TABLE linkedin_posts ADD COLUMN likes INTEGER DEFAULT 0",
+    "ALTER TABLE linkedin_posts ADD COLUMN comments INTEGER DEFAULT 0",
+    "ALTER TABLE linkedin_posts ADD COLUMN impressions INTEGER DEFAULT 0",
+    "ALTER TABLE linkedin_posts ADD COLUMN metrics_updated_at TEXT",
+    "ALTER TABLE tiktok_posts ADD COLUMN views INTEGER DEFAULT 0",
+    "ALTER TABLE tiktok_posts ADD COLUMN likes INTEGER DEFAULT 0",
+    "ALTER TABLE tiktok_posts ADD COLUMN comments INTEGER DEFAULT 0",
+    "ALTER TABLE tiktok_posts ADD COLUMN shares INTEGER DEFAULT 0",
+    "ALTER TABLE tiktok_posts ADD COLUMN metrics_updated_at TEXT",
+    "ALTER TABLE telegram_posts ADD COLUMN views INTEGER DEFAULT 0",
+    "ALTER TABLE telegram_posts ADD COLUMN metrics_updated_at TEXT",
+  ];
+  for (const sql of metricsAlterations) {
+    try { db.exec(sql); } catch { /* column already exists */ }
+  }
 }
 
 export interface User {
