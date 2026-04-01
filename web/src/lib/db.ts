@@ -166,6 +166,27 @@ function initSchema(db: Database.Database) {
       published_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS telegram_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      bot_token TEXT NOT NULL,
+      chat_id TEXT NOT NULL,
+      bot_username TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS telegram_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content TEXT NOT NULL,
+      poster_id TEXT REFERENCES posters(id),
+      scheduled_at TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      telegram_message_id TEXT,
+      error TEXT,
+      published_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
 
