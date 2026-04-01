@@ -187,6 +187,35 @@ function initSchema(db: Database.Database) {
       published_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS tiktok_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tiktok_open_id TEXT NOT NULL,
+      tiktok_display_name TEXT NOT NULL,
+      access_token TEXT NOT NULL,
+      refresh_token TEXT,
+      expires_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS tiktok_oauth_state (
+      state TEXT PRIMARY KEY,
+      code_verifier TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS tiktok_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content TEXT NOT NULL,
+      poster_id TEXT REFERENCES posters(id),
+      scheduled_at TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      tiktok_publish_id TEXT,
+      error TEXT,
+      published_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 }
 

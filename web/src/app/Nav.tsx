@@ -37,6 +37,12 @@ export default function Nav() {
                 LinkedIn
               </Link>
               <Link
+                href="/admin/tiktok"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                TikTok
+              </Link>
+              <Link
                 href="/profile"
                 className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
               >
