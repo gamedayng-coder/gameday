@@ -19,10 +19,34 @@ export default function Nav() {
           {status === "loading" ? null : session ? (
             <>
               <Link
+                href="/admin/data-sources"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Data Sources
+              </Link>
+              <Link
+                href="/admin/events"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Events
+              </Link>
+              <Link
+                href="/admin/content"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Content
+              </Link>
+              <Link
+                href="/admin/publishing"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Publishing
+              </Link>
+              <Link
                 href="/admin/sports"
                 className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
               >
-                Sports Admin
+                Sports
               </Link>
               <Link
                 href="/admin/twitter"

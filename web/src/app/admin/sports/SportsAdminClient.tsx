@@ -135,7 +135,8 @@ export default function SportsAdminClient({ competitions: initial, syncLogs: ini
         <p className="mt-2 text-xs text-zinc-400">
           Free tier competitions from football-data.org. Add your{" "}
           <code className="bg-zinc-100 px-1 rounded">FOOTBALL_DATA_API_KEY</code> to{" "}
-          <code className="bg-zinc-100 px-1 rounded">.env.local</code> to enable sync.
+          <code className="bg-zinc-100 px-1 rounded">.env.local</code> to enable sync, or configure a custom data source via{" "}
+          <a href="/admin/data-sources" className="underline hover:text-zinc-600">Data Sources</a>.
         </p>
       </div>
 
