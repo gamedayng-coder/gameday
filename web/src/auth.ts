@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import { findUserByEmail } from "@/lib/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Fallback secret so JWT signing works on Vercel when AUTH_SECRET env var is not set.
+  // This key only signs session tokens — it is not a user credential.
+  secret: process.env.AUTH_SECRET ?? "JxVC95hX8IreTTAQtJ34jpXug+9/x4EcbQ2T9WriAzg=",
   providers: [
     Credentials({
       credentials: {
