@@ -2,9 +2,12 @@ import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
 
-// Store the database in a data directory at project root
-const DATA_DIR = path.join(process.cwd(), "data");
-if (!fs.existsSync(DATA_DIR)) {
+// On Vercel the deployment directory is read-only; use /tmp which is writable.
+// Locally, persist in data/ so the DB survives restarts.
+const DATA_DIR = process.env.VERCEL
+  ? "/tmp"
+  : path.join(process.cwd(), "data");
+if (!process.env.VERCEL && !fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
@@ -240,6 +243,12 @@ function initSchema(db: Database.Database) {
   for (const sql of metricsAlterations) {
     try { db.exec(sql); } catch { /* column already exists */ }
   }
+
+  // Seed demo account — always ensure it exists (safe on serverless cold starts)
+  db.prepare(`
+    INSERT OR IGNORE INTO users (id, email, password_hash, name)
+    VALUES ('demo-account-001', 'demo@gamedayng.com', '$2b$12$rOI6f9QQqdvFA2UCqmki2.nW77en0F0J9YCoQkU./1tup9kFAGgh2', 'Demo Account')
+  `).run();
 }
 
 export interface User {
