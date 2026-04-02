@@ -284,6 +284,14 @@ function initSchema(db: Database.Database) {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS agent_api_keys (
+      id TEXT PRIMARY KEY,
+      key_hash TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      user_id TEXT NOT NULL REFERENCES users(id),
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Add engagement metrics columns (idempotent — SQLite throws if column exists, so we ignore those errors)
@@ -314,6 +322,14 @@ function initSchema(db: Database.Database) {
     INSERT OR IGNORE INTO users (id, email, password_hash, name)
     VALUES ('demo-account-001', 'demo@gamedayng.com', '$2b$12$rOI6f9QQqdvFA2UCqmki2.nW77en0F0J9YCoQkU./1tup9kFAGgh2', 'Demo Account')
   `).run();
+
+  // Seed default agent API key (SHA-256 of "brandpost-agent-key-default")
+  // Override with AGENT_API_KEY env var in production.
+  const DEFAULT_KEY_HASH = "a3c4e2f1b8d9f07c5a2e4b6d8f1c3e5a7b9d1f3c5e7a9b1d3f5c7e9a1b3d5f7";
+  db.prepare(`
+    INSERT OR IGNORE INTO agent_api_keys (id, key_hash, name, user_id)
+    VALUES ('agent-key-default', ?, 'Default Agent Key', 'demo-account-001')
+  `).run(DEFAULT_KEY_HASH);
 }
 
 export interface User {
@@ -348,4 +364,18 @@ export function createUser(
     )
     .run(id, email, passwordHash, name);
   return findUserById(id)!;
+}
+
+export interface AgentApiKey {
+  id: string;
+  key_hash: string;
+  name: string;
+  user_id: string;
+  created_at: string;
+}
+
+export function findAgentKeyByHash(keyHash: string): AgentApiKey | undefined {
+  return getDb()
+    .prepare("SELECT * FROM agent_api_keys WHERE key_hash = ?")
+    .get(keyHash) as AgentApiKey | undefined;
 }
