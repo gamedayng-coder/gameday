@@ -153,7 +153,7 @@ export async function getTikTokUserInfo(
 // Ensure we have a valid (non-expired) access token, refreshing if needed.
 // Returns the active access token.
 async function getValidAccessToken(): Promise<string> {
-  const cred = getTikTokCredential();
+  const cred = await getTikTokCredential();
   if (!cred) throw new Error("No TikTok account connected");
 
   if (cred.expires_at && cred.refresh_token) {
@@ -162,7 +162,7 @@ async function getValidAccessToken(): Promise<string> {
     if (expiresAt.getTime() - Date.now() < 60_000) {
       const tokens = await refreshTikTokToken(cred.refresh_token);
       const newExpiresAt = new Date(Date.now() + tokens.expiresIn * 1000);
-      updateTikTokTokens(cred.id, tokens.accessToken, tokens.refreshToken, newExpiresAt);
+      await updateTikTokTokens(cred.id, tokens.accessToken, tokens.refreshToken, newExpiresAt);
       return tokens.accessToken;
     }
   }

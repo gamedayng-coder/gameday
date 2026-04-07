@@ -72,7 +72,7 @@ export async function getLinkedInUserInfo(
 // Post a text update to LinkedIn as the authenticated member.
 // Returns the URN of the created post (e.g. "urn:li:share:123456").
 export async function postToLinkedIn(content: string): Promise<string> {
-  const cred = getLinkedInCredential();
+  const cred = await getLinkedInCredential();
   if (!cred) throw new Error("No LinkedIn account connected");
 
   const authorUrn = `urn:li:person:${cred.linkedin_user_id}`;

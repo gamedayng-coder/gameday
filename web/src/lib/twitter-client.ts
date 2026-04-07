@@ -12,7 +12,7 @@ export function getTwitterAppClient(): TwitterApi {
 
 // Returns a user-context client, refreshing the access token if near expiry.
 export async function getTwitterUserClient(): Promise<TwitterApi> {
-  const cred = getTwitterCredential();
+  const cred = await getTwitterCredential();
   if (!cred) throw new Error("No Twitter account connected");
 
   // Refresh if the token expires within the next 60 seconds
@@ -24,7 +24,7 @@ export async function getTwitterUserClient(): Promise<TwitterApi> {
       const newExpiresAt = refreshed.expiresIn
         ? new Date(Date.now() + refreshed.expiresIn * 1000)
         : null;
-      updateTwitterTokens(
+      await updateTwitterTokens(
         cred.id,
         refreshed.accessToken,
         refreshed.refreshToken ?? null,

@@ -16,7 +16,7 @@ export default function SportsAdminClient({ competitions: initial, syncLogs: ini
   const [message, setMessage] = useState<string | null>(null);
 
   async function toggleActive(comp: Competition) {
-    const newActive = comp.active === 0;
+    const newActive = !comp.active;
     const res = await fetch("/api/sports/competitions", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

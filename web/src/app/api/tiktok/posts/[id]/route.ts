@@ -18,7 +18,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Invalid post id" }, { status: 400 });
   }
 
-  const post = getTikTokPostById(postId);
+  const post = await getTikTokPostById(postId);
   if (!post) {
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
@@ -26,6 +26,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Only pending posts can be cancelled" }, { status: 409 });
   }
 
-  cancelTikTokPost(postId);
+  await cancelTikTokPost(postId);
   return NextResponse.json({ success: true });
 }
