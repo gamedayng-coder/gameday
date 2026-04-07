@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
   // ── Twitter ──────────────────────────────────────────────────────────────
   try {
-    const posts = getPublishedTwitterPosts();
+    const posts = await getPublishedTwitterPosts();
     if (posts.length === 0) {
       results.twitter = { updated: 0 };
     } else {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
         for (const tweet of response.data ?? []) {
           const m = tweet.public_metrics;
           if (!m) continue;
-          updateTwitterMetrics(
+          await updateTwitterMetrics(
             batch.find((p) => p.tweet_id === tweet.id)!.id,
             {
               likes: m.like_count ?? 0,

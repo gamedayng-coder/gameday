@@ -20,20 +20,20 @@ import { sendTelegramMessage } from "@/lib/telegram-client";
 //
 // Returns: { queued: number, published: number, channels: object }
 export async function POST(req: NextRequest) {
-  const agent = validateAgentRequest(req);
+  const agent = await validateAgentRequest(req);
   if (!agent) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const approvedItems = getContentItems(agent.userId, "approved");
+  const approvedItems = await getContentItems(agent.userId, "approved");
   let queued = 0;
 
   // ── Queue approved content onto each connected channel ────────────────────
 
-  const twitterCred = getTwitterCredential();
-  const linkedinCred = getLinkedInCredential();
-  const telegramCred = getTelegramCredential();
-  const tiktokCred = getTikTokCredential();
+  const twitterCred = await getTwitterCredential();
+  const linkedinCred = await getLinkedInCredential();
+  const telegramCred = await getTelegramCredential();
+  const tiktokCred = await getTikTokCredential();
 
   for (const item of approvedItems) {
     const captions = (() => {
@@ -43,26 +43,26 @@ export async function POST(req: NextRequest) {
 
     if (twitterCred) {
       const text = (captions.twitter || item.caption).slice(0, 280);
-      if (text.trim()) { createTwitterPost(text, item.poster_id ?? null, null); queued++; }
+      if (text.trim()) { await createTwitterPost(text, item.poster_id ?? null, null); queued++; }
     }
     if (linkedinCred) {
       const text = captions.linkedin || item.caption;
-      if (text.trim()) { createLinkedInPost(text, item.poster_id ?? null, null); queued++; }
+      if (text.trim()) { await createLinkedInPost(text, item.poster_id ?? null, null); queued++; }
     }
     if (telegramCred) {
       const text = captions.telegram || item.caption;
-      if (text.trim()) { createTelegramPost(text, item.poster_id ?? null, null); queued++; }
+      if (text.trim()) { await createTelegramPost(text, item.poster_id ?? null, null); queued++; }
     }
     // TikTok requires media — queue posts only when a poster image is attached
     if (tiktokCred && item.poster_id) {
       const text = captions.tiktok || item.caption;
-      if (text.trim()) { createTikTokPost(text, item.poster_id, null); queued++; }
+      if (text.trim()) { await createTikTokPost(text, item.poster_id, null); queued++; }
     }
   }
 
   // Mark approved items as scheduled now that they've been queued
   for (const item of approvedItems) {
-    updateContentItem(item.id, agent.userId, { status: "scheduled" });
+    await updateContentItem(item.id, agent.userId, { status: "scheduled" });
   }
 
   // ── Process each channel's due queue ─────────────────────────────────────
@@ -75,14 +75,14 @@ export async function POST(req: NextRequest) {
     channelResults.twitter = { published: 0, failed: 0, errors: [] };
     try {
       const userClient = await getTwitterUserClient();
-      for (const post of getDueTwitterPosts()) {
+      for (const post of await getDueTwitterPosts()) {
         try {
           const tweet = await userClient.v2.tweet({ text: post.content });
-          markTwitterPostPublished(post.id, tweet.data.id);
+          await markTwitterPostPublished(post.id, tweet.data.id);
           channelResults.twitter.published++;
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
-          markTwitterPostFailed(post.id, msg);
+          await markTwitterPostFailed(post.id, msg);
           channelResults.twitter.failed++;
           channelResults.twitter.errors.push(msg);
         }
@@ -95,14 +95,14 @@ export async function POST(req: NextRequest) {
   // LinkedIn
   if (linkedinCred) {
     channelResults.linkedin = { published: 0, failed: 0, errors: [] };
-    for (const post of getDueLinkedInPosts()) {
+    for (const post of await getDueLinkedInPosts()) {
       try {
         const postId = await postToLinkedIn(post.content);
-        markLinkedInPostPublished(post.id, postId);
+        await markLinkedInPostPublished(post.id, postId);
         channelResults.linkedin.published++;
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        markLinkedInPostFailed(post.id, msg);
+        await markLinkedInPostFailed(post.id, msg);
         channelResults.linkedin.failed++;
         channelResults.linkedin.errors.push(msg);
       }
@@ -112,14 +112,14 @@ export async function POST(req: NextRequest) {
   // Telegram
   if (telegramCred) {
     channelResults.telegram = { published: 0, failed: 0, errors: [] };
-    for (const post of getDueTelegramPosts()) {
+    for (const post of await getDueTelegramPosts()) {
       try {
         const messageId = await sendTelegramMessage(post.content);
-        markTelegramPostPublished(post.id, messageId);
+        await markTelegramPostPublished(post.id, messageId);
         channelResults.telegram.published++;
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        markTelegramPostFailed(post.id, msg);
+        await markTelegramPostFailed(post.id, msg);
         channelResults.telegram.failed++;
         channelResults.telegram.errors.push(msg);
       }
@@ -129,9 +129,9 @@ export async function POST(req: NextRequest) {
   // TikTok — text-only posts not supported; fail any that slipped through
   if (tiktokCred) {
     channelResults.tiktok = { published: 0, failed: 0, errors: [] };
-    for (const post of getDueTikTokPosts()) {
+    for (const post of await getDueTikTokPosts()) {
       const msg = "TikTok requires a poster image; text-only posts are not supported";
-      markTikTokPostFailed(post.id, msg);
+      await markTikTokPostFailed(post.id, msg);
       channelResults.tiktok.failed++;
       channelResults.tiktok.errors.push(msg);
     }

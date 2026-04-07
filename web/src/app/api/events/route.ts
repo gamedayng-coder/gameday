@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const templatesOnly = searchParams.get("templates") === "true";
-  return NextResponse.json(getManualEvents(session.user.id, templatesOnly));
+  return NextResponse.json(await getManualEvents(session.user.id, templatesOnly));
 }
 
 export async function POST(req: Request) {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     is_template?: boolean;
   };
   if (!body.title) return NextResponse.json({ error: "title is required" }, { status: 400 });
-  const event = createManualEvent(
+  const event = await createManualEvent(
     randomUUID(),
     session.user.id,
     body.title.trim(),

@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export type ContentStatus = "draft" | "approved" | "scheduled" | "published" | "discarded";
 
@@ -8,86 +8,79 @@ export interface ContentItem {
   poster_id: string | null;
   event_id: string | null;
   caption: string;
-  platform_captions: string; // JSON: { twitter: string, instagram: string, ... }
+  platform_captions: string; // JSON: { twitter: string, ... }
   status: ContentStatus;
   scheduled_at: string | null;
   approved_at: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  // Joined
   poster_image_path?: string | null;
   event_title?: string | null;
 }
 
-export function getContentItems(userId: string, status?: ContentStatus): ContentItem[] {
-  const where = status ? "WHERE ci.user_id = ? AND ci.status = ?" : "WHERE ci.user_id = ?";
-  const params = status ? [userId, status] : [userId];
-  return getDb()
-    .prepare(`
-      SELECT ci.*,
-        p.image_path AS poster_image_path,
-        me.title AS event_title
-      FROM content_items ci
-      LEFT JOIN posters p ON p.id = ci.poster_id
-      LEFT JOIN manual_events me ON me.id = ci.event_id
-      ${where}
-      ORDER BY ci.created_at DESC
-    `)
-    .all(...params) as ContentItem[];
+const CONTENT_SELECT = `
+  *,
+  poster:posters!content_items_poster_id_fkey(image_path),
+  event:manual_events!content_items_event_id_fkey(title)
+`;
+
+function flattenContent(row: Record<string, unknown>): ContentItem {
+  const poster = row.poster as { image_path: string | null } | null;
+  const event = row.event as { title: string } | null;
+  const { poster: _p, event: _e, platform_captions, ...rest } = row;
+  return {
+    ...(rest as unknown as ContentItem),
+    platform_captions: typeof platform_captions === "string" ? platform_captions : JSON.stringify(platform_captions),
+    poster_image_path: poster?.image_path ?? null,
+    event_title: event?.title ?? null,
+  };
 }
 
-export function getContentItemById(id: string, userId: string): ContentItem | undefined {
-  return getDb()
-    .prepare(`
-      SELECT ci.*,
-        p.image_path AS poster_image_path,
-        me.title AS event_title
-      FROM content_items ci
-      LEFT JOIN posters p ON p.id = ci.poster_id
-      LEFT JOIN manual_events me ON me.id = ci.event_id
-      WHERE ci.id = ? AND ci.user_id = ?
-    `)
-    .get(id, userId) as ContentItem | undefined;
+export async function getContentItems(userId: string, status?: ContentStatus): Promise<ContentItem[]> {
+  let query = supabase().from("content_items").select(CONTENT_SELECT).eq("user_id", userId).order("created_at", { ascending: false });
+  if (status) query = query.eq("status", status);
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []).map((row) => flattenContent(row as unknown as Record<string, unknown>));
 }
 
-export function createContentItem(
-  id: string,
-  userId: string,
-  posterId: string | null,
-  eventId: string | null,
-  caption: string,
-  platformCaptions: Record<string, string>
-): ContentItem {
+export async function getContentItemById(id: string, userId: string): Promise<ContentItem | undefined> {
+  const { data } = await supabase().from("content_items").select(CONTENT_SELECT).eq("id", id).eq("user_id", userId).maybeSingle();
+  if (!data) return undefined;
+  return flattenContent(data as unknown as Record<string, unknown>);
+}
+
+export async function createContentItem(
+  id: string, userId: string, posterId: string | null, eventId: string | null,
+  caption: string, platformCaptions: Record<string, string>
+): Promise<ContentItem> {
   const now = new Date().toISOString();
-  getDb()
-    .prepare(
-      "INSERT INTO content_items (id, user_id, poster_id, event_id, caption, platform_captions, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)"
-    )
-    .run(id, userId, posterId, eventId, caption, JSON.stringify(platformCaptions), now, now);
-  return getContentItemById(id, userId)!;
+  const { data, error } = await supabase()
+    .from("content_items")
+    .insert({ id, user_id: userId, poster_id: posterId, event_id: eventId, caption, platform_captions: platformCaptions, created_at: now, updated_at: now })
+    .select(CONTENT_SELECT)
+    .single();
+  if (error) throw error;
+  return flattenContent(data as unknown as Record<string, unknown>);
 }
 
-export function updateContentItem(
+export async function updateContentItem(
   id: string,
   userId: string,
   fields: Partial<Pick<ContentItem, "caption" | "status" | "scheduled_at"> & { platform_captions: Record<string, string> }>
-): ContentItem | undefined {
+): Promise<ContentItem | undefined> {
   const now = new Date().toISOString();
-  const sets: string[] = ["updated_at = ?"];
-  const params: unknown[] = [now];
-  if (fields.caption !== undefined) { sets.push("caption = ?"); params.push(fields.caption); }
-  if (fields.platform_captions !== undefined) { sets.push("platform_captions = ?"); params.push(JSON.stringify(fields.platform_captions)); }
+  const update: Record<string, unknown> = { updated_at: now };
+  if (fields.caption !== undefined) update.caption = fields.caption;
+  if (fields.platform_captions !== undefined) update.platform_captions = fields.platform_captions;
   if (fields.status !== undefined) {
-    sets.push("status = ?");
-    params.push(fields.status);
-    if (fields.status === "approved") { sets.push("approved_at = ?"); params.push(now); }
-    if (fields.status === "published") { sets.push("published_at = ?"); params.push(now); }
+    update.status = fields.status;
+    if (fields.status === "approved") update.approved_at = now;
+    if (fields.status === "published") update.published_at = now;
   }
-  if (fields.scheduled_at !== undefined) { sets.push("scheduled_at = ?"); params.push(fields.scheduled_at); }
-  params.push(id, userId);
-  getDb()
-    .prepare(`UPDATE content_items SET ${sets.join(", ")} WHERE id = ? AND user_id = ?`)
-    .run(...params);
-  return getContentItemById(id, userId);
+  if (fields.scheduled_at !== undefined) update.scheduled_at = fields.scheduled_at;
+  const { data } = await supabase().from("content_items").update(update).eq("id", id).eq("user_id", userId).select(CONTENT_SELECT).maybeSingle();
+  if (!data) return undefined;
+  return flattenContent(data as unknown as Record<string, unknown>);
 }

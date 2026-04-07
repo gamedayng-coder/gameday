@@ -6,7 +6,7 @@ import { randomUUID } from "crypto";
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const sources = getDataSources(session.user.id);
+  const sources = await getDataSources(session.user.id);
   // Mask api_key in list response
   return NextResponse.json(sources.map((s) => ({ ...s, api_key: s.api_key ? "••••••••" : "" })));
 }
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   if (!body.name || !body.base_url || !body.api_key) {
     return NextResponse.json({ error: "name, base_url, and api_key are required" }, { status: 400 });
   }
-  const ds = createDataSource(
+  const ds = await createDataSource(
     randomUUID(),
     session.user.id,
     body.name.trim(),

@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cred = getTikTokCredential();
+  const cred = await getTikTokCredential();
   if (!cred) {
     return NextResponse.json({ connected: false });
   }

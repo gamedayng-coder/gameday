@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const duePosts = getDueTelegramPosts();
+  const duePosts = await getDueTelegramPosts();
   if (duePosts.length === 0) {
     return NextResponse.json({ processed: 0, results: [] });
   }
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       let messageId: string;
 
       if (post.poster_id) {
-        const poster = getPosterById(post.poster_id);
+        const poster = await getPosterById(post.poster_id);
         if (poster?.image_path && fs.existsSync(poster.image_path)) {
           // Send as photo with caption when an approved poster image is attached
           messageId = await sendTelegramPhoto(poster.image_path, post.content);
@@ -40,11 +40,11 @@ export async function POST(req: NextRequest) {
         messageId = await sendTelegramMessage(post.content);
       }
 
-      markTelegramPostPublished(post.id, messageId);
+      await markTelegramPostPublished(post.id, messageId);
       results.push({ id: post.id, success: true, messageId });
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : String(e);
-      markTelegramPostFailed(post.id, errMsg);
+      await markTelegramPostFailed(post.id, errMsg);
       results.push({ id: post.id, success: false, error: errMsg });
     }
   }

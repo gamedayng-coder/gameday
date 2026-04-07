@@ -16,12 +16,12 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const aggregates = getAnalyticsAggregates();
+  const aggregates = await getAnalyticsAggregates();
   const posts = {
-    twitter: getPublishedTwitterPosts(),
-    linkedin: getPublishedLinkedInPosts(),
-    tiktok: getPublishedTikTokPosts(),
-    telegram: getPublishedTelegramPosts(),
+    twitter: await getPublishedTwitterPosts(),
+    linkedin: await getPublishedLinkedInPosts(),
+    tiktok: await getPublishedTikTokPosts(),
+    telegram: await getPublishedTelegramPosts(),
   };
 
   return NextResponse.json({ aggregates, posts });

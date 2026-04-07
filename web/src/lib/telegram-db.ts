@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export interface TelegramCredential {
   id: number;
@@ -23,85 +23,77 @@ export interface TelegramPost {
   created_at: string;
 }
 
-export function getTelegramCredential(): TelegramCredential | undefined {
-  return getDb()
-    .prepare("SELECT * FROM telegram_credentials ORDER BY created_at DESC LIMIT 1")
-    .get() as TelegramCredential | undefined;
+export async function getTelegramCredential(): Promise<TelegramCredential | undefined> {
+  const { data } = await supabase()
+    .from("telegram_credentials")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data ?? undefined;
 }
 
-export function upsertTelegramCredential(
-  botToken: string,
-  chatId: string,
-  botUsername: string | null
-): TelegramCredential {
-  const db = getDb();
-  db.prepare("DELETE FROM telegram_credentials").run();
-  db.prepare(`
-    INSERT INTO telegram_credentials (bot_token, chat_id, bot_username)
-    VALUES (?, ?, ?)
-  `).run(botToken, chatId, botUsername);
-  return getTelegramCredential()!;
+export async function upsertTelegramCredential(botToken: string, chatId: string, botUsername: string | null): Promise<TelegramCredential> {
+  await supabase().from("telegram_credentials").delete().neq("id", 0);
+  const { data, error } = await supabase()
+    .from("telegram_credentials")
+    .insert({ bot_token: botToken, chat_id: chatId, bot_username: botUsername })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function deleteTelegramCredential(): void {
-  getDb().prepare("DELETE FROM telegram_credentials").run();
+export async function deleteTelegramCredential(): Promise<void> {
+  await supabase().from("telegram_credentials").delete().neq("id", 0);
 }
 
-export function createTelegramPost(
-  content: string,
-  posterId: string | null,
-  scheduledAt: Date | null
-): TelegramPost {
-  const db = getDb();
-  const result = db.prepare(`
-    INSERT INTO telegram_posts (content, poster_id, scheduled_at, status)
-    VALUES (?, ?, ?, 'pending')
-  `).run(content, posterId, scheduledAt ? scheduledAt.toISOString() : null);
-  return getTelegramPostById(result.lastInsertRowid as number)!;
+export async function createTelegramPost(content: string, posterId: string | null, scheduledAt: Date | null): Promise<TelegramPost> {
+  const { data, error } = await supabase()
+    .from("telegram_posts")
+    .insert({ content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function getTelegramPostById(id: number): TelegramPost | undefined {
-  return getDb()
-    .prepare("SELECT * FROM telegram_posts WHERE id = ?")
-    .get(id) as TelegramPost | undefined;
+export async function getTelegramPostById(id: number): Promise<TelegramPost | undefined> {
+  const { data } = await supabase().from("telegram_posts").select("*").eq("id", id).maybeSingle();
+  return data ?? undefined;
 }
 
-export function getTelegramPosts(limit = 50): TelegramPost[] {
-  return getDb()
-    .prepare("SELECT * FROM telegram_posts ORDER BY created_at DESC LIMIT ?")
-    .all(limit) as TelegramPost[];
+export async function getTelegramPosts(limit = 50): Promise<TelegramPost[]> {
+  const { data, error } = await supabase().from("telegram_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function getDueTelegramPosts(): TelegramPost[] {
-  return getDb()
-    .prepare(`
-      SELECT * FROM telegram_posts
-      WHERE status = 'pending'
-        AND (scheduled_at IS NULL OR scheduled_at <= datetime('now'))
-      ORDER BY scheduled_at ASC
-    `)
-    .all() as TelegramPost[];
+export async function getDueTelegramPosts(): Promise<TelegramPost[]> {
+  const now = new Date().toISOString();
+  const { data, error } = await supabase()
+    .from("telegram_posts")
+    .select("*")
+    .eq("status", "pending")
+    .or(`scheduled_at.is.null,scheduled_at.lte.${now}`)
+    .order("scheduled_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function markTelegramPostPublished(id: number, messageId: string): void {
-  getDb().prepare(`
-    UPDATE telegram_posts
-    SET status='published', telegram_message_id=?, published_at=datetime('now'), error=NULL
-    WHERE id=?
-  `).run(messageId, id);
+export async function markTelegramPostPublished(id: number, messageId: string): Promise<void> {
+  const { error } = await supabase()
+    .from("telegram_posts")
+    .update({ status: "published", telegram_message_id: messageId, published_at: new Date().toISOString(), error: null })
+    .eq("id", id);
+  if (error) throw error;
 }
 
-export function markTelegramPostFailed(id: number, error: string): void {
-  getDb().prepare(`
-    UPDATE telegram_posts
-    SET status='failed', error=?
-    WHERE id=?
-  `).run(error, id);
+export async function markTelegramPostFailed(id: number, errorMsg: string): Promise<void> {
+  const { error } = await supabase().from("telegram_posts").update({ status: "failed", error: errorMsg }).eq("id", id);
+  if (error) throw error;
 }
 
-export function cancelTelegramPost(id: number): void {
-  getDb().prepare(`
-    UPDATE telegram_posts SET status='cancelled'
-    WHERE id=? AND status='pending'
-  `).run(id);
+export async function cancelTelegramPost(id: number): Promise<void> {
+  await supabase().from("telegram_posts").update({ status: "cancelled" }).eq("id", id).eq("status", "pending");
 }

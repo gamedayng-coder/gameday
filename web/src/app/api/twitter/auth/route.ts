@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getTwitterAppClient } from "@/lib/twitter-client";
 import { deleteTwitterCredential } from "@/lib/twitter-db";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 // GET /api/twitter/auth — initiate OAuth 2.0 PKCE flow
 export async function GET() {
@@ -17,10 +17,9 @@ export async function GET() {
     scope: ["tweet.read", "tweet.write", "users.read", "offline.access"],
   });
 
-  // Persist state + code_verifier for the callback
-  getDb()
-    .prepare("INSERT OR REPLACE INTO twitter_oauth_state (state, code_verifier) VALUES (?, ?)")
-    .run(state, codeVerifier);
+  await supabase()
+    .from("twitter_oauth_state")
+    .upsert({ state, code_verifier: codeVerifier }, { onConflict: "state" });
 
   return NextResponse.redirect(url);
 }
@@ -32,6 +31,6 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  deleteTwitterCredential();
+  await deleteTwitterCredential();
   return NextResponse.json({ success: true });
 }

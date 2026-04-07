@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export interface Competition {
   id: number;
@@ -6,7 +6,7 @@ export interface Competition {
   name: string;
   country: string | null;
   emblem_url: string | null;
-  active: number;
+  active: boolean;
   current_season: string | null;
   created_at: string;
 }
@@ -36,7 +36,6 @@ export interface Fixture {
   season: string | null;
   created_at: string;
   updated_at: string;
-  // Joined fields
   competition_name?: string;
   home_team_name?: string;
   home_team_crest?: string;
@@ -59,7 +58,6 @@ export interface Standing {
   goals_against: number;
   goal_difference: number;
   updated_at: string;
-  // Joined fields
   team_name?: string;
   team_crest?: string;
   team_tla?: string;
@@ -76,80 +74,85 @@ export interface SyncLog {
 
 // ── Competitions ──────────────────────────────────────────────────────────────
 
-export function getAllCompetitions(): Competition[] {
-  return getDb()
-    .prepare("SELECT * FROM sports_competitions ORDER BY name ASC")
-    .all() as Competition[];
+export async function getAllCompetitions(): Promise<Competition[]> {
+  const { data, error } = await supabase()
+    .from("sports_competitions")
+    .select("*")
+    .order("name", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function getActiveCompetitions(): Competition[] {
-  return getDb()
-    .prepare("SELECT * FROM sports_competitions WHERE active = 1 ORDER BY name ASC")
-    .all() as Competition[];
+export async function getActiveCompetitions(): Promise<Competition[]> {
+  const { data, error } = await supabase()
+    .from("sports_competitions")
+    .select("*")
+    .eq("active", true)
+    .order("name", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function getCompetitionByExternalId(externalId: string): Competition | undefined {
-  return getDb()
-    .prepare("SELECT * FROM sports_competitions WHERE external_id = ?")
-    .get(externalId) as Competition | undefined;
+export async function getCompetitionByExternalId(externalId: string): Promise<Competition | undefined> {
+  const { data } = await supabase()
+    .from("sports_competitions")
+    .select("*")
+    .eq("external_id", externalId)
+    .single();
+  return data ?? undefined;
 }
 
-export function upsertCompetition(
+export async function upsertCompetition(
   externalId: string,
   name: string,
   country: string | null,
   emblemUrl: string | null,
   currentSeason: string | null
-): Competition {
-  const db = getDb();
-  const existing = getCompetitionByExternalId(externalId);
-  if (existing) {
-    db.prepare(
-      "UPDATE sports_competitions SET name=?, country=?, emblem_url=?, current_season=? WHERE external_id=?"
-    ).run(name, country, emblemUrl, currentSeason, externalId);
-  } else {
-    db.prepare(
-      "INSERT INTO sports_competitions (external_id, name, country, emblem_url, current_season) VALUES (?,?,?,?,?)"
-    ).run(externalId, name, country, emblemUrl, currentSeason);
-  }
-  return getCompetitionByExternalId(externalId)!;
+): Promise<Competition> {
+  const { data, error } = await supabase()
+    .from("sports_competitions")
+    .upsert(
+      { external_id: externalId, name, country, emblem_url: emblemUrl, current_season: currentSeason },
+      { onConflict: "external_id" }
+    )
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function setCompetitionActive(externalId: string, active: boolean): void {
-  getDb()
-    .prepare("UPDATE sports_competitions SET active=? WHERE external_id=?")
-    .run(active ? 1 : 0, externalId);
+export async function setCompetitionActive(externalId: string, active: boolean): Promise<void> {
+  const { error } = await supabase()
+    .from("sports_competitions")
+    .update({ active })
+    .eq("external_id", externalId);
+  if (error) throw error;
 }
 
 // ── Teams ─────────────────────────────────────────────────────────────────────
 
-export function upsertTeam(
+export async function upsertTeam(
   externalId: string,
   name: string,
   shortName: string | null,
   tla: string | null,
   crestUrl: string | null
-): Team {
-  const db = getDb();
-  const existing = db
-    .prepare("SELECT * FROM sports_teams WHERE external_id = ?")
-    .get(externalId) as Team | undefined;
-  if (existing) {
-    db.prepare(
-      "UPDATE sports_teams SET name=?, short_name=?, tla=?, crest_url=? WHERE external_id=?"
-    ).run(name, shortName, tla, crestUrl, externalId);
-    return db.prepare("SELECT * FROM sports_teams WHERE external_id=?").get(externalId) as Team;
-  } else {
-    db.prepare(
-      "INSERT INTO sports_teams (external_id, name, short_name, tla, crest_url) VALUES (?,?,?,?,?)"
-    ).run(externalId, name, shortName, tla, crestUrl);
-    return db.prepare("SELECT * FROM sports_teams WHERE external_id=?").get(externalId) as Team;
-  }
+): Promise<Team> {
+  const { data, error } = await supabase()
+    .from("sports_teams")
+    .upsert(
+      { external_id: externalId, name, short_name: shortName, tla, crest_url: crestUrl },
+      { onConflict: "external_id" }
+    )
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
-export function upsertFixture(
+export async function upsertFixture(
   externalId: string,
   competitionId: number,
   homeTeamId: number,
@@ -161,75 +164,84 @@ export function upsertFixture(
   awayScore: number | null,
   matchday: number | null,
   season: string | null
-): void {
-  const db = getDb();
-  const now = new Date().toISOString();
-  db.prepare(`
-    INSERT INTO sports_fixtures
-      (external_id, competition_id, home_team_id, away_team_id, match_date, venue, status, home_score, away_score, matchday, season, updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-    ON CONFLICT(external_id) DO UPDATE SET
-      status=excluded.status,
-      home_score=excluded.home_score,
-      away_score=excluded.away_score,
-      match_date=excluded.match_date,
-      venue=excluded.venue,
-      matchday=excluded.matchday,
-      season=excluded.season,
-      updated_at=excluded.updated_at
-  `).run(externalId, competitionId, homeTeamId, awayTeamId, matchDate, venue, status, homeScore, awayScore, matchday, season, now);
+): Promise<void> {
+  const { error } = await supabase()
+    .from("sports_fixtures")
+    .upsert(
+      {
+        external_id: externalId,
+        competition_id: competitionId,
+        home_team_id: homeTeamId,
+        away_team_id: awayTeamId,
+        match_date: matchDate,
+        venue,
+        status,
+        home_score: homeScore,
+        away_score: awayScore,
+        matchday,
+        season,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "external_id" }
+    );
+  if (error) throw error;
 }
 
-export function getFixtures(options: {
+const FIXTURE_SELECT = `
+  *,
+  competition:sports_competitions!sports_fixtures_competition_id_fkey(name),
+  home_team:sports_teams!sports_fixtures_home_team_id_fkey(name, crest_url),
+  away_team:sports_teams!sports_fixtures_away_team_id_fkey(name, crest_url)
+`;
+
+function flattenFixture(row: Record<string, unknown>): Fixture {
+  const comp = row.competition as { name: string } | null;
+  const ht = row.home_team as { name: string; crest_url: string | null } | null;
+  const at = row.away_team as { name: string; crest_url: string | null } | null;
+  const { competition: _c, home_team: _ht, away_team: _at, ...rest } = row;
+  return {
+    ...(rest as unknown as Fixture),
+    competition_name: comp?.name,
+    home_team_name: ht?.name,
+    home_team_crest: ht?.crest_url ?? undefined,
+    away_team_name: at?.name,
+    away_team_crest: at?.crest_url ?? undefined,
+  };
+}
+
+export async function getFixtures(options: {
   competitionExternalId?: string;
   status?: string | string[];
   dateFrom?: string;
   dateTo?: string;
   limit?: number;
-}): Fixture[] {
-  const db = getDb();
-  const conditions: string[] = [];
-  const params: (string | number)[] = [];
+}): Promise<Fixture[]> {
+  let query = supabase()
+    .from("sports_fixtures")
+    .select(FIXTURE_SELECT)
+    .order("match_date", { ascending: true });
 
   if (options.competitionExternalId) {
-    conditions.push("sc.external_id = ?");
-    params.push(options.competitionExternalId);
+    const comp = await getCompetitionByExternalId(options.competitionExternalId);
+    if (!comp) return [];
+    query = query.eq("competition_id", comp.id);
   }
   if (options.status) {
     const statuses = Array.isArray(options.status) ? options.status : [options.status];
-    conditions.push(`sf.status IN (${statuses.map(() => "?").join(",")})`);
-    params.push(...statuses);
+    query = query.in("status", statuses);
   }
-  if (options.dateFrom) {
-    conditions.push("sf.match_date >= ?");
-    params.push(options.dateFrom);
-  }
-  if (options.dateTo) {
-    conditions.push("sf.match_date <= ?");
-    params.push(options.dateTo);
-  }
+  if (options.dateFrom) query = query.gte("match_date", options.dateFrom);
+  if (options.dateTo) query = query.lte("match_date", options.dateTo);
+  if (options.limit) query = query.limit(options.limit);
 
-  const where = conditions.length ? "WHERE " + conditions.join(" AND ") : "";
-  const limit = options.limit ? `LIMIT ${options.limit}` : "";
-
-  return db.prepare(`
-    SELECT sf.*,
-      sc.name AS competition_name,
-      ht.name AS home_team_name, ht.crest_url AS home_team_crest,
-      at.name AS away_team_name, at.crest_url AS away_team_crest
-    FROM sports_fixtures sf
-    JOIN sports_competitions sc ON sc.id = sf.competition_id
-    JOIN sports_teams ht ON ht.id = sf.home_team_id
-    JOIN sports_teams at ON at.id = sf.away_team_id
-    ${where}
-    ORDER BY sf.match_date ASC
-    ${limit}
-  `).all(...params) as Fixture[];
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []).map((row) => flattenFixture(row as unknown as Record<string, unknown>));
 }
 
 // ── Standings ─────────────────────────────────────────────────────────────────
 
-export function upsertStanding(
+export async function upsertStanding(
   competitionId: number,
   season: string,
   teamId: number,
@@ -244,74 +256,73 @@ export function upsertStanding(
     goals_against: number;
     goal_difference: number;
   }
-): void {
-  const now = new Date().toISOString();
-  getDb().prepare(`
-    INSERT INTO sports_standings
-      (competition_id, season, team_id, position, played_games, won, draw, lost, points, goals_for, goals_against, goal_difference, updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-    ON CONFLICT(competition_id, season, team_id) DO UPDATE SET
-      position=excluded.position,
-      played_games=excluded.played_games,
-      won=excluded.won,
-      draw=excluded.draw,
-      lost=excluded.lost,
-      points=excluded.points,
-      goals_for=excluded.goals_for,
-      goals_against=excluded.goals_against,
-      goal_difference=excluded.goal_difference,
-      updated_at=excluded.updated_at
-  `).run(
-    competitionId, season, teamId, position,
-    stats.played_games, stats.won, stats.draw, stats.lost, stats.points,
-    stats.goals_for, stats.goals_against, stats.goal_difference, now
-  );
+): Promise<void> {
+  const { error } = await supabase()
+    .from("sports_standings")
+    .upsert(
+      { competition_id: competitionId, season, team_id: teamId, position, ...stats, updated_at: new Date().toISOString() },
+      { onConflict: "competition_id,season,team_id" }
+    );
+  if (error) throw error;
 }
 
-export function getStandings(competitionExternalId: string, season?: string): Standing[] {
-  const db = getDb();
-  const params: (string | number)[] = [competitionExternalId];
-  let seasonClause = "";
-  if (season) {
-    seasonClause = "AND ss.season = ?";
-    params.push(season);
-  } else {
-    // Get the latest season automatically
-    seasonClause = `AND ss.season = (
-      SELECT season FROM sports_standings ss2
-      JOIN sports_competitions sc2 ON sc2.id = ss2.competition_id
-      WHERE sc2.external_id = ?
-      ORDER BY season DESC LIMIT 1
-    )`;
-    params.push(competitionExternalId);
+export async function getStandings(competitionExternalId: string, season?: string): Promise<Standing[]> {
+  const comp = await getCompetitionByExternalId(competitionExternalId);
+  if (!comp) return [];
+
+  let effectiveSeason = season;
+  if (!effectiveSeason) {
+    const { data: seasons } = await supabase()
+      .from("sports_standings")
+      .select("season")
+      .eq("competition_id", comp.id)
+      .order("season", { ascending: false })
+      .limit(1);
+    if (!seasons || seasons.length === 0) return [];
+    effectiveSeason = seasons[0].season as string;
   }
 
-  return db.prepare(`
-    SELECT ss.*,
-      st.name AS team_name, st.crest_url AS team_crest, st.tla AS team_tla
-    FROM sports_standings ss
-    JOIN sports_competitions sc ON sc.id = ss.competition_id
-    JOIN sports_teams st ON st.id = ss.team_id
-    WHERE sc.external_id = ? ${seasonClause}
-    ORDER BY ss.position ASC
-  `).all(...params) as Standing[];
+  const { data, error } = await supabase()
+    .from("sports_standings")
+    .select("*, team:sports_teams!sports_standings_team_id_fkey(name, crest_url, tla)")
+    .eq("competition_id", comp.id)
+    .eq("season", effectiveSeason)
+    .order("position", { ascending: true });
+  if (error) throw error;
+
+  return (data ?? []).map((row) => {
+    const r = row as Record<string, unknown>;
+    const team = r.team as { name: string; crest_url: string | null; tla: string | null } | null;
+    const { team: _t, ...rest } = r;
+    return {
+      ...(rest as unknown as Standing),
+      team_name: team?.name,
+      team_crest: team?.crest_url ?? undefined,
+      team_tla: team?.tla ?? undefined,
+    };
+  });
 }
 
 // ── Sync Log ──────────────────────────────────────────────────────────────────
 
-export function logSync(
+export async function logSync(
   competitionId: number | null,
   syncType: string,
   status: "success" | "error",
   message: string | null
-): void {
-  getDb()
-    .prepare("INSERT INTO sports_sync_log (competition_id, sync_type, status, message) VALUES (?,?,?,?)")
-    .run(competitionId, syncType, status, message);
+): Promise<void> {
+  const { error } = await supabase()
+    .from("sports_sync_log")
+    .insert({ competition_id: competitionId, sync_type: syncType, status, message });
+  if (error) throw error;
 }
 
-export function getRecentSyncLogs(limit = 20): SyncLog[] {
-  return getDb()
-    .prepare("SELECT * FROM sports_sync_log ORDER BY synced_at DESC LIMIT ?")
-    .all(limit) as SyncLog[];
+export async function getRecentSyncLogs(limit = 20): Promise<SyncLog[]> {
+  const { data, error } = await supabase()
+    .from("sports_sync_log")
+    .select("*")
+    .order("synced_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data ?? [];
 }

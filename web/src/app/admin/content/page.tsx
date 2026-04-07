@@ -8,8 +8,8 @@ import ContentPreviewClient from "./ContentPreviewClient";
 export default async function ContentPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const items = getContentItems(session.user.id);
-  const posters = getPosters({ status: "approved" });
-  const events = getManualEvents(session.user.id);
+  const items = await getContentItems(session.user.id);
+  const posters = await getPosters({ status: "approved" });
+  const events = await getManualEvents(session.user.id);
   return <ContentPreviewClient items={items} posters={posters} events={events} />;
 }

@@ -6,7 +6,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  const ds = getDataSourceById(id, session.user.id);
+  const ds = await getDataSourceById(id, session.user.id);
   if (!ds) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   // Build auth header based on auth_type

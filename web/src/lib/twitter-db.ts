@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export interface TwitterCredential {
   id: number;
@@ -25,106 +25,111 @@ export interface TwitterPost {
   created_at: string;
 }
 
-export function getTwitterCredential(): TwitterCredential | undefined {
-  return getDb()
-    .prepare("SELECT * FROM twitter_credentials ORDER BY created_at DESC LIMIT 1")
-    .get() as TwitterCredential | undefined;
+export async function getTwitterCredential(): Promise<TwitterCredential | undefined> {
+  const { data } = await supabase()
+    .from("twitter_credentials")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data ?? undefined;
 }
 
-export function upsertTwitterCredential(
+export async function upsertTwitterCredential(
   twitterUserId: string,
   twitterUsername: string,
   accessToken: string,
   refreshToken: string | null,
   expiresAt: Date | null
-): TwitterCredential {
-  const db = getDb();
-  db.prepare("DELETE FROM twitter_credentials").run();
-  db.prepare(`
-    INSERT INTO twitter_credentials (twitter_user_id, twitter_username, access_token, refresh_token, expires_at)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(
-    twitterUserId,
-    twitterUsername,
-    accessToken,
-    refreshToken,
-    expiresAt ? expiresAt.toISOString() : null
-  );
-  return getTwitterCredential()!;
+): Promise<TwitterCredential> {
+  await supabase().from("twitter_credentials").delete().neq("id", 0);
+  const { data, error } = await supabase()
+    .from("twitter_credentials")
+    .insert({
+      twitter_user_id: twitterUserId,
+      twitter_username: twitterUsername,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_at: expiresAt ? expiresAt.toISOString() : null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function updateTwitterTokens(
+export async function updateTwitterTokens(
   id: number,
   accessToken: string,
   refreshToken: string | null,
   expiresAt: Date | null
-): void {
-  getDb().prepare(`
-    UPDATE twitter_credentials
-    SET access_token=?, refresh_token=?, expires_at=?, updated_at=datetime('now')
-    WHERE id=?
-  `).run(accessToken, refreshToken, expiresAt ? expiresAt.toISOString() : null, id);
+): Promise<void> {
+  const { error } = await supabase()
+    .from("twitter_credentials")
+    .update({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_at: expiresAt ? expiresAt.toISOString() : null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) throw error;
 }
 
-export function deleteTwitterCredential(): void {
-  getDb().prepare("DELETE FROM twitter_credentials").run();
+export async function deleteTwitterCredential(): Promise<void> {
+  await supabase().from("twitter_credentials").delete().neq("id", 0);
 }
 
-export function createTwitterPost(
+export async function createTwitterPost(
   content: string,
   posterId: string | null,
   scheduledAt: Date | null
-): TwitterPost {
-  const db = getDb();
-  const result = db.prepare(`
-    INSERT INTO twitter_posts (content, poster_id, scheduled_at, status)
-    VALUES (?, ?, ?, 'pending')
-  `).run(content, posterId, scheduledAt ? scheduledAt.toISOString() : null);
-  return getTwitterPostById(result.lastInsertRowid as number)!;
+): Promise<TwitterPost> {
+  const { data, error } = await supabase()
+    .from("twitter_posts")
+    .insert({ content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function getTwitterPostById(id: number): TwitterPost | undefined {
-  return getDb()
-    .prepare("SELECT * FROM twitter_posts WHERE id = ?")
-    .get(id) as TwitterPost | undefined;
+export async function getTwitterPostById(id: number): Promise<TwitterPost | undefined> {
+  const { data } = await supabase().from("twitter_posts").select("*").eq("id", id).maybeSingle();
+  return data ?? undefined;
 }
 
-export function getTwitterPosts(limit = 50): TwitterPost[] {
-  return getDb()
-    .prepare("SELECT * FROM twitter_posts ORDER BY created_at DESC LIMIT ?")
-    .all(limit) as TwitterPost[];
+export async function getTwitterPosts(limit = 50): Promise<TwitterPost[]> {
+  const { data, error } = await supabase().from("twitter_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function getDueTwitterPosts(): TwitterPost[] {
-  return getDb()
-    .prepare(`
-      SELECT * FROM twitter_posts
-      WHERE status = 'pending'
-        AND (scheduled_at IS NULL OR scheduled_at <= datetime('now'))
-      ORDER BY scheduled_at ASC
-    `)
-    .all() as TwitterPost[];
+export async function getDueTwitterPosts(): Promise<TwitterPost[]> {
+  const now = new Date().toISOString();
+  const { data, error } = await supabase()
+    .from("twitter_posts")
+    .select("*")
+    .eq("status", "pending")
+    .or(`scheduled_at.is.null,scheduled_at.lte.${now}`)
+    .order("scheduled_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function markTwitterPostPublished(id: number, tweetId: string): void {
-  getDb().prepare(`
-    UPDATE twitter_posts
-    SET status='published', tweet_id=?, published_at=datetime('now'), error=NULL
-    WHERE id=?
-  `).run(tweetId, id);
+export async function markTwitterPostPublished(id: number, tweetId: string): Promise<void> {
+  const { error } = await supabase()
+    .from("twitter_posts")
+    .update({ status: "published", tweet_id: tweetId, published_at: new Date().toISOString(), error: null })
+    .eq("id", id);
+  if (error) throw error;
 }
 
-export function markTwitterPostFailed(id: number, error: string): void {
-  getDb().prepare(`
-    UPDATE twitter_posts
-    SET status='failed', error=?
-    WHERE id=?
-  `).run(error, id);
+export async function markTwitterPostFailed(id: number, errorMsg: string): Promise<void> {
+  const { error } = await supabase().from("twitter_posts").update({ status: "failed", error: errorMsg }).eq("id", id);
+  if (error) throw error;
 }
 
-export function cancelTwitterPost(id: number): void {
-  getDb().prepare(`
-    UPDATE twitter_posts SET status='cancelled'
-    WHERE id=? AND status='pending'
-  `).run(id);
+export async function cancelTwitterPost(id: number): Promise<void> {
+  await supabase().from("twitter_posts").update({ status: "cancelled" }).eq("id", id).eq("status", "pending");
 }

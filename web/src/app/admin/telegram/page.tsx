@@ -10,9 +10,9 @@ export default async function TelegramAdminPage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const credential = getTelegramCredential() ?? null;
-  const posts = getTelegramPosts(50);
-  const approvedPosters = getPosters({ status: "approved" });
+  const credential = (await getTelegramCredential()) ?? null;
+  const posts = await getTelegramPosts(50);
+  const approvedPosters = await getPosters({ status: "approved" });
 
   return (
     <TelegramAdminClient

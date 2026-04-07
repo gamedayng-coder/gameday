@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cred = getTelegramCredential();
+  const cred = await getTelegramCredential();
   if (!cred) {
     return NextResponse.json({ connected: false });
   }

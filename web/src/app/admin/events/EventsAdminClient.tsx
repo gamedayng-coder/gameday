@@ -65,7 +65,7 @@ export default function EventsAdminClient({ events: initial }: Props) {
     resetForm();
     setEditingId(ev.id);
     setTitle(ev.title);
-    setIsTemplate(ev.is_template === 1);
+    setIsTemplate(Boolean(ev.is_template));
     const inputMode = ev.input_mode as InputMode;
     setMode(inputMode);
     const parsed = (() => { try { return JSON.parse(ev.event_data) as Fields; } catch { return {}; } })();
@@ -318,7 +318,7 @@ export default function EventsAdminClient({ events: initial }: Props) {
                 <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-zinc-900 truncate">{ev.title}</p>
-                    {ev.is_template === 1 && (
+                    {ev.is_template && (
                       <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full shrink-0">template</span>
                     )}
                     <span className="text-xs bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded-full shrink-0">{ev.input_mode}</span>

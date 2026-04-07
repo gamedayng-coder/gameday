@@ -6,6 +6,6 @@ import EventsAdminClient from "./EventsAdminClient";
 export default async function EventsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const events = getManualEvents(session.user.id);
+  const events = await getManualEvents(session.user.id);
   return <EventsAdminClient events={events} />;
 }

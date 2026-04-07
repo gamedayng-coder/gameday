@@ -6,7 +6,7 @@ import PublishingAdminClient from "./PublishingAdminClient";
 export default async function PublishingPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const routines = getRoutines(session.user.id);
-  const schedules = getSchedules(session.user.id, { limit: 50 });
+  const routines = await getRoutines(session.user.id);
+  const schedules = await getSchedules(session.user.id, { limit: 50 });
   return <PublishingAdminClient routines={routines} schedules={schedules} />;
 }

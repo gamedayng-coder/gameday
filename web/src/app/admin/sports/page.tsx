@@ -11,15 +11,15 @@ export default async function SportsAdminPage() {
   if (!session) redirect("/login");
 
   // Seed available competitions on first visit
-  const existing = getAllCompetitions();
+  const existing = await getAllCompetitions();
   if (existing.length === 0) {
     for (const c of FREE_TIER_COMPETITIONS) {
-      upsertCompetition(c.external_id, c.name, c.country, null, null);
+      await upsertCompetition(c.external_id, c.name, c.country, null, null);
     }
   }
 
-  const competitions = getAllCompetitions();
-  const syncLogs = getRecentSyncLogs(20);
+  const competitions = await getAllCompetitions();
+  const syncLogs = await getRecentSyncLogs(20);
 
   return <SportsAdminClient competitions={competitions} syncLogs={syncLogs} />;
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTwitterAppClient } from "@/lib/twitter-client";
 import { upsertTwitterCredential } from "@/lib/twitter-db";
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 // GET /api/twitter/callback — OAuth 2.0 redirect handler
 export async function GET(req: NextRequest) {
@@ -14,15 +14,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${baseUrl}/admin/twitter?error=missing_params`);
   }
 
-  const stored = getDb()
-    .prepare("SELECT code_verifier FROM twitter_oauth_state WHERE state = ?")
-    .get(state) as { code_verifier: string } | undefined;
+  const { data: stored } = await supabase()
+    .from("twitter_oauth_state")
+    .select("code_verifier")
+    .eq("state", state)
+    .single();
 
   if (!stored) {
     return NextResponse.redirect(`${baseUrl}/admin/twitter?error=invalid_state`);
   }
 
-  getDb().prepare("DELETE FROM twitter_oauth_state WHERE state = ?").run(state);
+  await supabase().from("twitter_oauth_state").delete().eq("state", state);
 
   try {
     const appClient = getTwitterAppClient();
@@ -37,7 +39,7 @@ export async function GET(req: NextRequest) {
     const { data: me } = await client.v2.me();
     const expiresAt = expiresIn ? new Date(Date.now() + expiresIn * 1000) : null;
 
-    upsertTwitterCredential(me.id, me.username, accessToken, refreshToken ?? null, expiresAt);
+    await upsertTwitterCredential(me.id, me.username, accessToken, refreshToken ?? null, expiresAt);
   } catch (e) {
     const msg = e instanceof Error ? encodeURIComponent(e.message) : "unknown";
     return NextResponse.redirect(`${baseUrl}/admin/twitter?error=${msg}`);

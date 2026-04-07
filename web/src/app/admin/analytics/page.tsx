@@ -15,12 +15,12 @@ export default async function AnalyticsPage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const aggregates = getAnalyticsAggregates();
+  const aggregates = await getAnalyticsAggregates();
   const posts = {
-    twitter: getPublishedTwitterPosts(),
-    linkedin: getPublishedLinkedInPosts(),
-    tiktok: getPublishedTikTokPosts(),
-    telegram: getPublishedTelegramPosts(),
+    twitter: await getPublishedTwitterPosts(),
+    linkedin: await getPublishedLinkedInPosts(),
+    tiktok: await getPublishedTikTokPosts(),
+    telegram: await getPublishedTelegramPosts(),
   };
 
   return <AnalyticsDashboardClient aggregates={aggregates} posts={posts} />;

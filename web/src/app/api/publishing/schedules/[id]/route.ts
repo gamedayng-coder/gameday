@@ -7,9 +7,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   // Verify ownership via a lookup
-  const all = getSchedules(session.user.id);
+  const all = await getSchedules(session.user.id);
   const owned = all.find((s) => s.id === id);
   if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  deleteSchedule(id, session.user.id);
+  await deleteSchedule(id, session.user.id);
   return NextResponse.json({ ok: true });
 }

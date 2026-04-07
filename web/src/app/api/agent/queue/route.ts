@@ -9,7 +9,7 @@ import { getContentItems } from "@/lib/content-db";
 //
 // Returns: { total: number, draft: number, approved: number, items: ContentItem[] }
 export async function GET(req: NextRequest) {
-  const agent = validateAgentRequest(req);
+  const agent = await validateAgentRequest(req);
   if (!agent) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -37,7 +37,8 @@ export async function GET(req: NextRequest) {
   }
 
   // Fetch items for each requested status and merge
-  const items = requestedStatuses.flatMap((status) => getContentItems(agent.userId, status));
+  const itemArrays = await Promise.all(requestedStatuses.map((status) => getContentItems(agent.userId, status)));
+  const items = itemArrays.flat();
 
   // Sort by created_at desc
   items.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));

@@ -10,9 +10,9 @@ export default async function TikTokAdminPage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const credential = getTikTokCredential() ?? null;
-  const posts = getTikTokPosts(50);
-  const approvedPosters = getPosters({ status: "approved" });
+  const credential = (await getTikTokCredential()) ?? null;
+  const posts = await getTikTokPosts(50);
+  const approvedPosters = await getPosters({ status: "approved" });
 
   return (
     <TikTokAdminClient

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const credential = upsertTelegramCredential(botToken, chatId, botUsername);
+  const credential = await upsertTelegramCredential(botToken, chatId, botUsername);
   return NextResponse.json({
     botUsername: credential.bot_username,
     chatId: credential.chat_id,
@@ -50,6 +50,6 @@ export async function DELETE() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  deleteTelegramCredential();
+  await deleteTelegramCredential();
   return NextResponse.json({ success: true });
 }

@@ -7,7 +7,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   const body = await req.json() as { name?: string; base_url?: string; api_key?: string; auth_type?: AuthType };
-  const ds = updateDataSource(id, session.user.id, {
+  const ds = await updateDataSource(id, session.user.id, {
     ...(body.name !== undefined && { name: body.name.trim() }),
     ...(body.base_url !== undefined && { base_url: body.base_url.trim() }),
     ...(body.api_key !== undefined && { api_key: body.api_key.trim() }),
@@ -21,8 +21,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  const existing = getDataSourceById(id, session.user.id);
+  const existing = await getDataSourceById(id, session.user.id);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  deleteDataSource(id, session.user.id);
+  await deleteDataSource(id, session.user.id);
   return NextResponse.json({ ok: true });
 }

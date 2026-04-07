@@ -14,8 +14,8 @@ export async function POST(req: Request) {
   const days = Math.min(body.days ?? 7, 30);
   const userId = session.user.id;
 
-  const routines = getRoutines(userId).filter((r) => r.enabled === 1);
-  const approvedContent = getContentItems(userId, "approved");
+  const routines = (await getRoutines(userId)).filter((r) => r.enabled);
+  const approvedContent = await getContentItems(userId, "approved");
 
   type DryRunEntry = {
     id: string;
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
           results.push(entry);
 
           if (body.save) {
-            createSchedule(entry.id, userId, content.id, channel, date.toISOString(), true);
+            await createSchedule(entry.id, userId, content.id, channel, date.toISOString(), true);
           }
         }
       }

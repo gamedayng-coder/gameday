@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const duePosts = getDueTwitterPosts();
+  const duePosts = await getDueTwitterPosts();
   if (duePosts.length === 0) {
     return NextResponse.json({ processed: 0, results: [] });
   }
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       let mediaIds: [string] | undefined;
 
       if (post.poster_id) {
-        const poster = getPosterById(post.poster_id);
+        const poster = await getPosterById(post.poster_id);
         if (poster?.image_path && fs.existsSync(poster.image_path)) {
           const mediaId = await userClient.v1.uploadMedia(poster.image_path);
           mediaIds = [mediaId];
@@ -51,11 +51,11 @@ export async function POST(req: NextRequest) {
         ...(mediaIds ? { media: { media_ids: mediaIds } } : {}),
       });
 
-      markTwitterPostPublished(post.id, tweet.data.id);
+      await markTwitterPostPublished(post.id, tweet.data.id);
       results.push({ id: post.id, success: true, tweetId: tweet.data.id });
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : String(e);
-      markTwitterPostFailed(post.id, errMsg);
+      await markTwitterPostFailed(post.id, errMsg);
       results.push({ id: post.id, success: false, error: errMsg });
     }
   }

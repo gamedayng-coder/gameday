@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 // ---- Per-platform metric shapes ----
 
@@ -28,139 +28,106 @@ export interface TelegramMetrics {
 
 // ---- Metric update helpers ----
 
-export function updateTwitterMetrics(postId: number, m: TwitterMetrics): void {
-  getDb()
-    .prepare(
-      `UPDATE twitter_posts
-       SET likes=?, retweets=?, replies=?, impressions=?, metrics_updated_at=datetime('now')
-       WHERE id=?`
-    )
-    .run(m.likes, m.retweets, m.replies, m.impressions, postId);
+export async function updateTwitterMetrics(postId: number, m: TwitterMetrics): Promise<void> {
+  const { error } = await supabase()
+    .from("twitter_posts")
+    .update({ likes: m.likes, retweets: m.retweets, replies: m.replies, impressions: m.impressions, metrics_updated_at: new Date().toISOString() })
+    .eq("id", postId);
+  if (error) throw error;
 }
 
-export function updateLinkedInMetrics(postId: number, m: LinkedInMetrics): void {
-  getDb()
-    .prepare(
-      `UPDATE linkedin_posts
-       SET likes=?, comments=?, impressions=?, metrics_updated_at=datetime('now')
-       WHERE id=?`
-    )
-    .run(m.likes, m.comments, m.impressions, postId);
+export async function updateLinkedInMetrics(postId: number, m: LinkedInMetrics): Promise<void> {
+  const { error } = await supabase()
+    .from("linkedin_posts")
+    .update({ likes: m.likes, comments: m.comments, impressions: m.impressions, metrics_updated_at: new Date().toISOString() })
+    .eq("id", postId);
+  if (error) throw error;
 }
 
-export function updateTikTokMetrics(postId: number, m: TikTokMetrics): void {
-  getDb()
-    .prepare(
-      `UPDATE tiktok_posts
-       SET views=?, likes=?, comments=?, shares=?, metrics_updated_at=datetime('now')
-       WHERE id=?`
-    )
-    .run(m.views, m.likes, m.comments, m.shares, postId);
+export async function updateTikTokMetrics(postId: number, m: TikTokMetrics): Promise<void> {
+  const { error } = await supabase()
+    .from("tiktok_posts")
+    .update({ views: m.views, likes: m.likes, comments: m.comments, shares: m.shares, metrics_updated_at: new Date().toISOString() })
+    .eq("id", postId);
+  if (error) throw error;
 }
 
-export function updateTelegramMetrics(postId: number, m: TelegramMetrics): void {
-  getDb()
-    .prepare(
-      `UPDATE telegram_posts
-       SET views=?, metrics_updated_at=datetime('now')
-       WHERE id=?`
-    )
-    .run(m.views, postId);
+export async function updateTelegramMetrics(postId: number, m: TelegramMetrics): Promise<void> {
+  const { error } = await supabase()
+    .from("telegram_posts")
+    .update({ views: m.views, metrics_updated_at: new Date().toISOString() })
+    .eq("id", postId);
+  if (error) throw error;
 }
 
 // ---- Published post rows (for metric fetching) ----
 
 export interface PublishedTwitterPost {
-  id: number;
-  tweet_id: string;
-  content: string;
-  published_at: string | null;
-  likes: number;
-  retweets: number;
-  replies: number;
-  impressions: number;
-  metrics_updated_at: string | null;
+  id: number; tweet_id: string; content: string; published_at: string | null;
+  likes: number; retweets: number; replies: number; impressions: number; metrics_updated_at: string | null;
 }
 
 export interface PublishedLinkedInPost {
-  id: number;
-  linkedin_post_id: string;
-  content: string;
-  published_at: string | null;
-  likes: number;
-  comments: number;
-  impressions: number;
-  metrics_updated_at: string | null;
+  id: number; linkedin_post_id: string; content: string; published_at: string | null;
+  likes: number; comments: number; impressions: number; metrics_updated_at: string | null;
 }
 
 export interface PublishedTikTokPost {
-  id: number;
-  tiktok_publish_id: string;
-  content: string;
-  published_at: string | null;
-  views: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  metrics_updated_at: string | null;
+  id: number; tiktok_publish_id: string; content: string; published_at: string | null;
+  views: number; likes: number; comments: number; shares: number; metrics_updated_at: string | null;
 }
 
 export interface PublishedTelegramPost {
-  id: number;
-  telegram_message_id: string;
-  content: string;
-  published_at: string | null;
-  views: number;
-  metrics_updated_at: string | null;
+  id: number; telegram_message_id: string; content: string; published_at: string | null;
+  views: number; metrics_updated_at: string | null;
 }
 
-export function getPublishedTwitterPosts(): PublishedTwitterPost[] {
-  return getDb()
-    .prepare(
-      `SELECT id, tweet_id, content, published_at,
-              COALESCE(likes,0) as likes, COALESCE(retweets,0) as retweets,
-              COALESCE(replies,0) as replies, COALESCE(impressions,0) as impressions,
-              metrics_updated_at
-       FROM twitter_posts WHERE status='published' AND tweet_id IS NOT NULL
-       ORDER BY published_at DESC LIMIT 50`
-    )
-    .all() as PublishedTwitterPost[];
+export async function getPublishedTwitterPosts(): Promise<PublishedTwitterPost[]> {
+  const { data, error } = await supabase()
+    .from("twitter_posts")
+    .select("id, tweet_id, content, published_at, likes, retweets, replies, impressions, metrics_updated_at")
+    .eq("status", "published")
+    .not("tweet_id", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return (data ?? []).map((r) => ({ ...r, likes: r.likes ?? 0, retweets: r.retweets ?? 0, replies: r.replies ?? 0, impressions: r.impressions ?? 0 })) as PublishedTwitterPost[];
 }
 
-export function getPublishedLinkedInPosts(): PublishedLinkedInPost[] {
-  return getDb()
-    .prepare(
-      `SELECT id, linkedin_post_id, content, published_at,
-              COALESCE(likes,0) as likes, COALESCE(comments,0) as comments,
-              COALESCE(impressions,0) as impressions, metrics_updated_at
-       FROM linkedin_posts WHERE status='published' AND linkedin_post_id IS NOT NULL
-       ORDER BY published_at DESC LIMIT 50`
-    )
-    .all() as PublishedLinkedInPost[];
+export async function getPublishedLinkedInPosts(): Promise<PublishedLinkedInPost[]> {
+  const { data, error } = await supabase()
+    .from("linkedin_posts")
+    .select("id, linkedin_post_id, content, published_at, likes, comments, impressions, metrics_updated_at")
+    .eq("status", "published")
+    .not("linkedin_post_id", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return (data ?? []).map((r) => ({ ...r, likes: r.likes ?? 0, comments: r.comments ?? 0, impressions: r.impressions ?? 0 })) as PublishedLinkedInPost[];
 }
 
-export function getPublishedTikTokPosts(): PublishedTikTokPost[] {
-  return getDb()
-    .prepare(
-      `SELECT id, tiktok_publish_id, content, published_at,
-              COALESCE(views,0) as views, COALESCE(likes,0) as likes,
-              COALESCE(comments,0) as comments, COALESCE(shares,0) as shares,
-              metrics_updated_at
-       FROM tiktok_posts WHERE status='published' AND tiktok_publish_id IS NOT NULL
-       ORDER BY published_at DESC LIMIT 50`
-    )
-    .all() as PublishedTikTokPost[];
+export async function getPublishedTikTokPosts(): Promise<PublishedTikTokPost[]> {
+  const { data, error } = await supabase()
+    .from("tiktok_posts")
+    .select("id, tiktok_publish_id, content, published_at, views, likes, comments, shares, metrics_updated_at")
+    .eq("status", "published")
+    .not("tiktok_publish_id", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return (data ?? []).map((r) => ({ ...r, views: r.views ?? 0, likes: r.likes ?? 0, comments: r.comments ?? 0, shares: r.shares ?? 0 })) as PublishedTikTokPost[];
 }
 
-export function getPublishedTelegramPosts(): PublishedTelegramPost[] {
-  return getDb()
-    .prepare(
-      `SELECT id, telegram_message_id, content, published_at,
-              COALESCE(views,0) as views, metrics_updated_at
-       FROM telegram_posts WHERE status='published' AND telegram_message_id IS NOT NULL
-       ORDER BY published_at DESC LIMIT 50`
-    )
-    .all() as PublishedTelegramPost[];
+export async function getPublishedTelegramPosts(): Promise<PublishedTelegramPost[]> {
+  const { data, error } = await supabase()
+    .from("telegram_posts")
+    .select("id, telegram_message_id, content, published_at, views, metrics_updated_at")
+    .eq("status", "published")
+    .not("telegram_message_id", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return (data ?? []).map((r) => ({ ...r, views: r.views ?? 0 })) as PublishedTelegramPost[];
 }
 
 // ---- Aggregate stats ----
@@ -177,74 +144,40 @@ export interface PlatformAggregate {
   total_shares: number;
 }
 
-export function getAnalyticsAggregates(): PlatformAggregate[] {
-  const db = getDb();
+export async function getAnalyticsAggregates(): Promise<PlatformAggregate[]> {
+  const [tw, li, tt, tg] = await Promise.all([
+    supabase().from("twitter_posts").select("status, likes, impressions, replies, retweets"),
+    supabase().from("linkedin_posts").select("status, likes, impressions, comments"),
+    supabase().from("tiktok_posts").select("status, views, likes, comments, shares"),
+    supabase().from("telegram_posts").select("status, views"),
+  ]);
 
-  const twitter = db
-    .prepare(
-      `SELECT
-         'twitter' as platform,
-         COUNT(*) as total_posts,
-         SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) as published,
-         SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) as pending,
-         SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) as failed,
-         SUM(COALESCE(likes,0)) as total_likes,
-         SUM(COALESCE(impressions,0)) as total_impressions,
-         SUM(COALESCE(replies,0)) as total_comments,
-         SUM(COALESCE(retweets,0)) as total_shares
-       FROM twitter_posts`
-    )
-    .get() as PlatformAggregate;
+  type Row = Record<string, unknown>;
 
-  const linkedin = db
-    .prepare(
-      `SELECT
-         'linkedin' as platform,
-         COUNT(*) as total_posts,
-         SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) as published,
-         SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) as pending,
-         SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) as failed,
-         SUM(COALESCE(likes,0)) as total_likes,
-         SUM(COALESCE(impressions,0)) as total_impressions,
-         SUM(COALESCE(comments,0)) as total_comments,
-         0 as total_shares
-       FROM linkedin_posts`
-    )
-    .get() as PlatformAggregate;
+  function agg(
+    platform: string, rows: Row[],
+    likeKey = "likes", impressionKey = "impressions",
+    commentKey: string | null = null, shareKey: string | null = null
+  ): PlatformAggregate {
+    if (!rows.length) return { platform, total_posts: 0, published: 0, pending: 0, failed: 0, total_likes: 0, total_impressions: 0, total_comments: 0, total_shares: 0 };
+    return {
+      platform,
+      total_posts: rows.length,
+      published: rows.filter((r) => r.status === "published").length,
+      pending: rows.filter((r) => r.status === "pending").length,
+      failed: rows.filter((r) => r.status === "failed").length,
+      total_likes: rows.reduce((s, r) => s + ((r[likeKey] as number) ?? 0), 0),
+      total_impressions: rows.reduce((s, r) => s + ((r[impressionKey] as number) ?? 0), 0),
+      total_comments: commentKey ? rows.reduce((s, r) => s + ((r[commentKey] as number) ?? 0), 0) : 0,
+      total_shares: shareKey ? rows.reduce((s, r) => s + ((r[shareKey] as number) ?? 0), 0) : 0,
+    };
+  }
 
-  const tiktok = db
-    .prepare(
-      `SELECT
-         'tiktok' as platform,
-         COUNT(*) as total_posts,
-         SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) as published,
-         SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) as pending,
-         SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) as failed,
-         SUM(COALESCE(likes,0)) as total_likes,
-         SUM(COALESCE(views,0)) as total_impressions,
-         SUM(COALESCE(comments,0)) as total_comments,
-         SUM(COALESCE(shares,0)) as total_shares
-       FROM tiktok_posts`
-    )
-    .get() as PlatformAggregate;
-
-  const telegram = db
-    .prepare(
-      `SELECT
-         'telegram' as platform,
-         COUNT(*) as total_posts,
-         SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) as published,
-         SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) as pending,
-         SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) as failed,
-         0 as total_likes,
-         SUM(COALESCE(views,0)) as total_impressions,
-         0 as total_comments,
-         0 as total_shares
-       FROM telegram_posts`
-    )
-    .get() as PlatformAggregate;
-
-  return [twitter, linkedin, tiktok, telegram].filter(
-    (r) => r && r.total_posts > 0
-  );
+  const results = [
+    agg("twitter", (tw.data ?? []) as Row[], "likes", "impressions", "replies", "retweets"),
+    agg("linkedin", (li.data ?? []) as Row[], "likes", "impressions", "comments"),
+    agg("tiktok", (tt.data ?? []) as Row[], "likes", "views", "comments", "shares"),
+    agg("telegram", (tg.data ?? []) as Row[], "views", "views"),
+  ];
+  return results.filter((r) => r.total_posts > 0);
 }

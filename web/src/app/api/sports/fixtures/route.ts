@@ -18,6 +18,6 @@ export async function GET(req: NextRequest) {
 
   const status = statusParam ? statusParam.split(",") : undefined;
 
-  const fixtures = getFixtures({ competitionExternalId: competition, status, dateFrom, dateTo, limit });
+  const fixtures = await getFixtures({ competitionExternalId: competition, status, dateFrom, dateTo, limit });
   return NextResponse.json(fixtures);
 }

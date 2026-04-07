@@ -1,25 +1,15 @@
-import { createHash } from "crypto";
+import { NextRequest } from "next/server";
 import { findAgentKeyByHash } from "@/lib/db";
-import type { NextRequest } from "next/server";
+import { createHash } from "crypto";
 
 export interface AgentIdentity {
   keyId: string;
   userId: string;
 }
 
-/**
- * Validates an agent API request.
- *
- * Accepts a Bearer token in the Authorization header.
- * The token is hashed with SHA-256 and looked up in agent_api_keys.
- *
- * AGENT_API_KEY env var takes precedence: if set, that raw key is the only
- * valid key and it resolves to the demo user (demo-account-001).
- */
-export function validateAgentRequest(req: NextRequest): AgentIdentity | null {
+export async function validateAgentRequest(req: NextRequest): Promise<AgentIdentity | null> {
   const authHeader = req.headers.get("authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
-
+  if (!authHeader?.startsWith("Bearer ")) return null;
   const token = authHeader.slice(7).trim();
   if (!token) return null;
 
@@ -30,10 +20,8 @@ export function validateAgentRequest(req: NextRequest): AgentIdentity | null {
     return { keyId: "env-key", userId: "demo-account-001" };
   }
 
-  // Otherwise look up the hashed token in DB.
-  const hash = createHash("sha256").update(token).digest("hex");
-  const record = findAgentKeyByHash(hash);
-  if (!record) return null;
-
-  return { keyId: record.id, userId: record.user_id };
+  const keyHash = createHash("sha256").update(token).digest("hex");
+  const key = await findAgentKeyByHash(keyHash);
+  if (!key) return null;
+  return { keyId: key.id, userId: key.user_id };
 }

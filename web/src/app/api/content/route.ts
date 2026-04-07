@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") as ContentStatus | null;
-  return NextResponse.json(getContentItems(session.user.id, status ?? undefined));
+  return NextResponse.json(await getContentItems(session.user.id, status ?? undefined));
 }
 
 export async function POST(req: Request) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     caption?: string;
     platform_captions?: Record<string, string>;
   };
-  const item = createContentItem(
+  const item = await createContentItem(
     randomUUID(),
     session.user.id,
     body.poster_id ?? null,

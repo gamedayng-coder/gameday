@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateAgentRequest } from "@/lib/agent-auth";
 import { getFixtures } from "@/lib/sports-db";
-import { getDb } from "@/lib/db";
-import { getContentItems } from "@/lib/content-db";
+import { createContentItem, updateContentItem, getContentItems } from "@/lib/content-db";
 import { randomUUID } from "crypto";
 
 // POST /api/agent/generate
@@ -15,7 +14,7 @@ import { randomUUID } from "crypto";
 //
 // Returns: { created: number, skipped: number, auto_approved: boolean, items: object[] }
 export async function POST(req: NextRequest) {
-  const agent = validateAgentRequest(req);
+  const agent = await validateAgentRequest(req);
   if (!agent) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -27,7 +26,7 @@ export async function POST(req: NextRequest) {
   const today = new Date();
   const future = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
 
-  const fixtures = getFixtures({
+  const fixtures = await getFixtures({
     status: "SCHEDULED",
     dateFrom: today.toISOString().slice(0, 10),
     dateTo: future.toISOString().slice(0, 10),
@@ -39,13 +38,13 @@ export async function POST(req: NextRequest) {
   }
 
   // Build set of captions already in draft/approved/scheduled for this user
+  const allItems = await getContentItems(agent.userId);
   const existingCaptions = new Set(
-    getContentItems(agent.userId)
+    allItems
       .filter((c) => !["discarded", "published"].includes(c.status))
       .map((c) => c.caption)
   );
 
-  const db = getDb();
   const createdItems: object[] = [];
   let skipped = 0;
 
@@ -73,19 +72,13 @@ export async function POST(req: NextRequest) {
       twitter: `${homeTeam} vs ${awayTeam}\n${competition}\n${dateStr} ${timeStr} UTC\n\n#Football #${competition.replace(/\s+/g, "")}`,
       telegram: caption,
       linkedin: `Upcoming match: ${caption}`,
-
     };
 
-    const status = autoApprove ? "approved" : "draft";
-    const now = new Date().toISOString();
     const id = randomUUID();
-
-    db.prepare(`
-      INSERT INTO content_items (id, user_id, poster_id, event_id, caption, platform_captions, status, approved_at, created_at, updated_at)
-      VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?)
-    `).run(id, agent.userId, caption, JSON.stringify(platformCaptions), status, autoApprove ? now : null, now, now);
-
-    const item = db.prepare("SELECT * FROM content_items WHERE id = ?").get(id);
+    let item = await createContentItem(id, agent.userId, null, null, caption, platformCaptions);
+    if (autoApprove) {
+      item = (await updateContentItem(id, agent.userId, { status: "approved" })) ?? item;
+    }
     createdItems.push(item as object);
     existingCaptions.add(caption);
   }

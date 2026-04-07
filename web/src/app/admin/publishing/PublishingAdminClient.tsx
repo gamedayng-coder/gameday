@@ -153,7 +153,7 @@ export default function PublishingAdminClient({ routines: initialRoutines, sched
     const res = await fetch(`/api/publishing/routines/${r.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enabled: r.enabled === 1 ? 0 : 1 }),
+      body: JSON.stringify({ enabled: !r.enabled }),
     });
     if (res.ok) {
       const updated = await res.json() as PublishingRoutine;

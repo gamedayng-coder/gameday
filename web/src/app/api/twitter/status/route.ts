@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cred = getTwitterCredential();
+  const cred = await getTwitterCredential();
   if (!cred) {
     return NextResponse.json({ connected: false });
   }

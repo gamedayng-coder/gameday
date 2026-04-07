@@ -13,9 +13,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     schedule_rule?: object;
     max_per_day?: number;
     timezone?: string;
-    enabled?: number;
+    enabled?: boolean;
   };
-  const updated = updateRoutine(id, session.user.id, body);
+  const updated = await updateRoutine(id, session.user.id, body);
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(updated);
 }
@@ -24,8 +24,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  const existing = getRoutineById(id, session.user.id);
+  const existing = await getRoutineById(id, session.user.id);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  deleteRoutine(id, session.user.id);
+  await deleteRoutine(id, session.user.id);
   return NextResponse.json({ ok: true });
 }

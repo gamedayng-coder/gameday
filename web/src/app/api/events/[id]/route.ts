@@ -13,7 +13,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     input_mode?: InputMode;
     is_template?: boolean;
   };
-  const updated = updateManualEvent(id, session.user.id, {
+  const updated = await updateManualEvent(id, session.user.id, {
     ...(body.title !== undefined && { title: body.title.trim() }),
     ...(body.event_data !== undefined && { event_data: body.event_data }),
     ...(body.raw_input !== undefined && { raw_input: body.raw_input }),
@@ -28,8 +28,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  const existing = getManualEventById(id, session.user.id);
+  const existing = await getManualEventById(id, session.user.id);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  deleteManualEvent(id, session.user.id);
+  await deleteManualEvent(id, session.user.id);
   return NextResponse.json({ ok: true });
 }

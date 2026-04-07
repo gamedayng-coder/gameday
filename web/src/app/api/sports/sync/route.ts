@@ -33,11 +33,11 @@ export async function POST(req: NextRequest) {
     if (body.competition_code) {
       competitionCodes = [body.competition_code];
     } else {
-      const active = getActiveCompetitions();
+      const active = await getActiveCompetitions();
       competitionCodes = active.map((c) => c.external_id);
     }
   } catch {
-    const active = getActiveCompetitions();
+    const active = await getActiveCompetitions();
     competitionCodes = active.map((c) => c.external_id);
   }
 
@@ -54,14 +54,14 @@ export async function POST(req: NextRequest) {
       const season = fdComp.currentSeason
         ? `${fdComp.currentSeason.startDate.slice(0, 4)}/${fdComp.currentSeason.endDate.slice(0, 4)}`
         : null;
-      upsertCompetition(code, fdComp.name, fdComp.area?.name ?? null, fdComp.emblem ?? null, season);
+      await upsertCompetition(code, fdComp.name, fdComp.area?.name ?? null, fdComp.emblem ?? null, season);
 
-      const comp = getCompetitionByExternalId(code)!;
+      const comp = (await getCompetitionByExternalId(code))!;
 
       // 2. Sync teams
       const teams = await fetchTeams(code);
       for (const t of teams) {
-        upsertTeam(String(t.id), t.name, t.shortName ?? null, t.tla ?? null, t.crest ?? null);
+        await upsertTeam(String(t.id), t.name, t.shortName ?? null, t.tla ?? null, t.crest ?? null);
       }
 
       // 3. Sync upcoming fixtures (next 30 days)
@@ -72,18 +72,18 @@ export async function POST(req: NextRequest) {
 
       const upcomingMatches = await fetchMatches(code, { dateFrom, dateTo });
       for (const m of upcomingMatches) {
-        const homeTeam = upsertTeam(
+        const homeTeam = await upsertTeam(
           String(m.homeTeam.id), m.homeTeam.name, m.homeTeam.shortName ?? null,
           m.homeTeam.tla ?? null, m.homeTeam.crest ?? null
         );
-        const awayTeam = upsertTeam(
+        const awayTeam = await upsertTeam(
           String(m.awayTeam.id), m.awayTeam.name, m.awayTeam.shortName ?? null,
           m.awayTeam.tla ?? null, m.awayTeam.crest ?? null
         );
         const matchSeason = m.season
           ? `${m.season.startDate.slice(0, 4)}/${m.season.endDate.slice(0, 4)}`
           : season;
-        upsertFixture(
+        await upsertFixture(
           String(m.id), comp.id, homeTeam.id, awayTeam.id,
           m.utcDate, m.venue ?? null, m.status,
           m.score?.fullTime?.home ?? null, m.score?.fullTime?.away ?? null,
@@ -102,18 +102,18 @@ export async function POST(req: NextRequest) {
         status: "FINISHED",
       });
       for (const m of recentMatches) {
-        const homeTeam = upsertTeam(
+        const homeTeam = await upsertTeam(
           String(m.homeTeam.id), m.homeTeam.name, m.homeTeam.shortName ?? null,
           m.homeTeam.tla ?? null, m.homeTeam.crest ?? null
         );
-        const awayTeam = upsertTeam(
+        const awayTeam = await upsertTeam(
           String(m.awayTeam.id), m.awayTeam.name, m.awayTeam.shortName ?? null,
           m.awayTeam.tla ?? null, m.awayTeam.crest ?? null
         );
         const matchSeason = m.season
           ? `${m.season.startDate.slice(0, 4)}/${m.season.endDate.slice(0, 4)}`
           : season;
-        upsertFixture(
+        await upsertFixture(
           String(m.id), comp.id, homeTeam.id, awayTeam.id,
           m.utcDate, m.venue ?? null, m.status,
           m.score?.fullTime?.home ?? null, m.score?.fullTime?.away ?? null,
@@ -128,11 +128,11 @@ export async function POST(req: NextRequest) {
         const totalTable = standingsData.standings.find((s) => s.type === "TOTAL");
         if (totalTable) {
           for (const row of totalTable.table) {
-            const team = upsertTeam(
+            const team = await upsertTeam(
               String(row.team.id), row.team.name, row.team.shortName ?? null,
               row.team.tla ?? null, row.team.crest ?? null
             );
-            upsertStanding(comp.id, season, team.id, row.position, {
+            await upsertStanding(comp.id, season, team.id, row.position, {
               played_games: row.playedGames,
               won: row.won,
               draw: row.draw,
@@ -146,12 +146,12 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      logSync(comp.id, "full", "success", null);
+      await logSync(comp.id, "full", "success", null);
       results.push({ code, success: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      const comp = getCompetitionByExternalId(code);
-      logSync(comp?.id ?? null, "full", "error", message);
+      const comp = await getCompetitionByExternalId(code);
+      await logSync(comp?.id ?? null, "full", "error", message);
       results.push({ code, success: false, error: message });
     }
   }

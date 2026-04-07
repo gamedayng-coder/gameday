@@ -10,9 +10,9 @@ export default async function LinkedInAdminPage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const credential = getLinkedInCredential() ?? null;
-  const posts = getLinkedInPosts(50);
-  const approvedPosters = getPosters({ status: "approved" });
+  const credential = (await getLinkedInCredential()) ?? null;
+  const posts = await getLinkedInPosts(50);
+  const approvedPosters = await getPosters({ status: "approved" });
 
   return (
     <LinkedInAdminClient

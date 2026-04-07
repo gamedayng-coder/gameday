@@ -10,9 +10,9 @@ export default async function TwitterAdminPage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const credential = getTwitterCredential() ?? null;
-  const posts = getTwitterPosts(50);
-  const approvedPosters = getPosters({ status: "approved" });
+  const credential = (await getTwitterCredential()) ?? null;
+  const posts = await getTwitterPosts(50);
+  const approvedPosters = await getPosters({ status: "approved" });
 
   return (
     <TwitterAdminClient

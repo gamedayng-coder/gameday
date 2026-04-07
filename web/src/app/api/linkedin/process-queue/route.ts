@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const duePosts = getDueLinkedInPosts();
+  const duePosts = await getDueLinkedInPosts();
   if (duePosts.length === 0) {
     return NextResponse.json({ processed: 0, results: [] });
   }
@@ -25,11 +25,11 @@ export async function POST(req: NextRequest) {
   for (const post of duePosts) {
     try {
       const linkedinPostId = await postToLinkedIn(post.content);
-      markLinkedInPostPublished(post.id, linkedinPostId);
+      await markLinkedInPostPublished(post.id, linkedinPostId);
       results.push({ id: post.id, success: true, linkedinPostId });
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : String(e);
-      markLinkedInPostFailed(post.id, errMsg);
+      await markLinkedInPostFailed(post.id, errMsg);
       results.push({ id: post.id, success: false, error: errMsg });
     }
   }

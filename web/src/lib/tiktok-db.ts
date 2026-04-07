@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export interface TikTokCredential {
   id: number;
@@ -25,106 +25,92 @@ export interface TikTokPost {
   created_at: string;
 }
 
-export function getTikTokCredential(): TikTokCredential | undefined {
-  return getDb()
-    .prepare("SELECT * FROM tiktok_credentials ORDER BY created_at DESC LIMIT 1")
-    .get() as TikTokCredential | undefined;
+export async function getTikTokCredential(): Promise<TikTokCredential | undefined> {
+  const { data } = await supabase()
+    .from("tiktok_credentials")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data ?? undefined;
 }
 
-export function upsertTikTokCredential(
-  openId: string,
-  displayName: string,
-  accessToken: string,
-  refreshToken: string | null,
-  expiresAt: Date | null
-): TikTokCredential {
-  const db = getDb();
-  db.prepare("DELETE FROM tiktok_credentials").run();
-  db.prepare(`
-    INSERT INTO tiktok_credentials (tiktok_open_id, tiktok_display_name, access_token, refresh_token, expires_at)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(
-    openId,
-    displayName,
-    accessToken,
-    refreshToken,
-    expiresAt ? expiresAt.toISOString() : null
-  );
-  return getTikTokCredential()!;
+export async function upsertTikTokCredential(
+  openId: string, displayName: string, accessToken: string,
+  refreshToken: string | null, expiresAt: Date | null
+): Promise<TikTokCredential> {
+  await supabase().from("tiktok_credentials").delete().neq("id", 0);
+  const { data, error } = await supabase()
+    .from("tiktok_credentials")
+    .insert({
+      tiktok_open_id: openId, tiktok_display_name: displayName,
+      access_token: accessToken, refresh_token: refreshToken,
+      expires_at: expiresAt ? expiresAt.toISOString() : null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function updateTikTokTokens(
-  id: number,
-  accessToken: string,
-  refreshToken: string | null,
-  expiresAt: Date | null
-): void {
-  getDb().prepare(`
-    UPDATE tiktok_credentials
-    SET access_token=?, refresh_token=?, expires_at=?, updated_at=datetime('now')
-    WHERE id=?
-  `).run(accessToken, refreshToken, expiresAt ? expiresAt.toISOString() : null, id);
+export async function updateTikTokTokens(id: number, accessToken: string, refreshToken: string | null, expiresAt: Date | null): Promise<void> {
+  const { error } = await supabase()
+    .from("tiktok_credentials")
+    .update({ access_token: accessToken, refresh_token: refreshToken, expires_at: expiresAt ? expiresAt.toISOString() : null, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
 }
 
-export function deleteTikTokCredential(): void {
-  getDb().prepare("DELETE FROM tiktok_credentials").run();
+export async function deleteTikTokCredential(): Promise<void> {
+  await supabase().from("tiktok_credentials").delete().neq("id", 0);
 }
 
-export function createTikTokPost(
-  content: string,
-  posterId: string | null,
-  scheduledAt: Date | null
-): TikTokPost {
-  const db = getDb();
-  const result = db.prepare(`
-    INSERT INTO tiktok_posts (content, poster_id, scheduled_at, status)
-    VALUES (?, ?, ?, 'pending')
-  `).run(content, posterId, scheduledAt ? scheduledAt.toISOString() : null);
-  return getTikTokPostById(result.lastInsertRowid as number)!;
+export async function createTikTokPost(content: string, posterId: string | null, scheduledAt: Date | null): Promise<TikTokPost> {
+  const { data, error } = await supabase()
+    .from("tiktok_posts")
+    .insert({ content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
-export function getTikTokPostById(id: number): TikTokPost | undefined {
-  return getDb()
-    .prepare("SELECT * FROM tiktok_posts WHERE id = ?")
-    .get(id) as TikTokPost | undefined;
+export async function getTikTokPostById(id: number): Promise<TikTokPost | undefined> {
+  const { data } = await supabase().from("tiktok_posts").select("*").eq("id", id).maybeSingle();
+  return data ?? undefined;
 }
 
-export function getTikTokPosts(limit = 50): TikTokPost[] {
-  return getDb()
-    .prepare("SELECT * FROM tiktok_posts ORDER BY created_at DESC LIMIT ?")
-    .all(limit) as TikTokPost[];
+export async function getTikTokPosts(limit = 50): Promise<TikTokPost[]> {
+  const { data, error } = await supabase().from("tiktok_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function getDueTikTokPosts(): TikTokPost[] {
-  return getDb()
-    .prepare(`
-      SELECT * FROM tiktok_posts
-      WHERE status = 'pending'
-        AND (scheduled_at IS NULL OR scheduled_at <= datetime('now'))
-      ORDER BY scheduled_at ASC
-    `)
-    .all() as TikTokPost[];
+export async function getDueTikTokPosts(): Promise<TikTokPost[]> {
+  const now = new Date().toISOString();
+  const { data, error } = await supabase()
+    .from("tiktok_posts")
+    .select("*")
+    .eq("status", "pending")
+    .or(`scheduled_at.is.null,scheduled_at.lte.${now}`)
+    .order("scheduled_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }
 
-export function markTikTokPostPublished(id: number, publishId: string): void {
-  getDb().prepare(`
-    UPDATE tiktok_posts
-    SET status='published', tiktok_publish_id=?, published_at=datetime('now'), error=NULL
-    WHERE id=?
-  `).run(publishId, id);
+export async function markTikTokPostPublished(id: number, publishId: string): Promise<void> {
+  const { error } = await supabase()
+    .from("tiktok_posts")
+    .update({ status: "published", tiktok_publish_id: publishId, published_at: new Date().toISOString(), error: null })
+    .eq("id", id);
+  if (error) throw error;
 }
 
-export function markTikTokPostFailed(id: number, error: string): void {
-  getDb().prepare(`
-    UPDATE tiktok_posts
-    SET status='failed', error=?
-    WHERE id=?
-  `).run(error, id);
+export async function markTikTokPostFailed(id: number, errorMsg: string): Promise<void> {
+  const { error } = await supabase().from("tiktok_posts").update({ status: "failed", error: errorMsg }).eq("id", id);
+  if (error) throw error;
 }
 
-export function cancelTikTokPost(id: number): void {
-  getDb().prepare(`
-    UPDATE tiktok_posts SET status='cancelled'
-    WHERE id=? AND status='pending'
-  `).run(id);
+export async function cancelTikTokPost(id: number): Promise<void> {
+  await supabase().from("tiktok_posts").update({ status: "cancelled" }).eq("id", id).eq("status", "pending");
 }
