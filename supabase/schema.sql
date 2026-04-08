@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS sports_sync_log (
 
 CREATE TABLE IF NOT EXISTS posters (
   id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   type TEXT NOT NULL,
   fixture_id BIGINT REFERENCES sports_fixtures(id),
   week_start TEXT,
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS posters (
 
 CREATE TABLE IF NOT EXISTS twitter_credentials (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   twitter_user_id TEXT NOT NULL,
   twitter_username TEXT NOT NULL,
   access_token TEXT NOT NULL,
@@ -108,12 +110,14 @@ CREATE TABLE IF NOT EXISTS twitter_credentials (
 
 CREATE TABLE IF NOT EXISTS twitter_oauth_state (
   state TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   code_verifier TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS twitter_posts (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   poster_id TEXT REFERENCES posters(id),
   scheduled_at TIMESTAMPTZ,
@@ -131,6 +135,7 @@ CREATE TABLE IF NOT EXISTS twitter_posts (
 
 CREATE TABLE IF NOT EXISTS linkedin_credentials (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   linkedin_user_id TEXT NOT NULL,
   linkedin_name TEXT NOT NULL,
   access_token TEXT NOT NULL,
@@ -141,11 +146,13 @@ CREATE TABLE IF NOT EXISTS linkedin_credentials (
 
 CREATE TABLE IF NOT EXISTS linkedin_oauth_state (
   state TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS linkedin_posts (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   poster_id TEXT REFERENCES posters(id),
   scheduled_at TIMESTAMPTZ,
@@ -162,6 +169,7 @@ CREATE TABLE IF NOT EXISTS linkedin_posts (
 
 CREATE TABLE IF NOT EXISTS telegram_credentials (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   bot_token TEXT NOT NULL,
   chat_id TEXT NOT NULL,
   bot_username TEXT,
@@ -171,6 +179,7 @@ CREATE TABLE IF NOT EXISTS telegram_credentials (
 
 CREATE TABLE IF NOT EXISTS telegram_posts (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   poster_id TEXT REFERENCES posters(id),
   scheduled_at TIMESTAMPTZ,
@@ -185,6 +194,7 @@ CREATE TABLE IF NOT EXISTS telegram_posts (
 
 CREATE TABLE IF NOT EXISTS tiktok_credentials (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   tiktok_open_id TEXT NOT NULL,
   tiktok_display_name TEXT NOT NULL,
   access_token TEXT NOT NULL,
@@ -196,12 +206,14 @@ CREATE TABLE IF NOT EXISTS tiktok_credentials (
 
 CREATE TABLE IF NOT EXISTS tiktok_oauth_state (
   state TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   code_verifier TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS tiktok_posts (
   id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   poster_id TEXT REFERENCES posters(id),
   scheduled_at TIMESTAMPTZ,
@@ -280,6 +292,26 @@ CREATE TABLE IF NOT EXISTS publishing_schedules (
   result TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS canva_credentials (
+  id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  canva_user_id TEXT NOT NULL,
+  display_name TEXT,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT,
+  expires_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS canva_oauth_state (
+  state TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  code_verifier TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Seed demo account (run once)
