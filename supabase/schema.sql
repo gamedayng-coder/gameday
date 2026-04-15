@@ -314,6 +314,28 @@ CREATE TABLE IF NOT EXISTS canva_oauth_state (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS brands (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS training_data_items (
+  id TEXT PRIMARY KEY,
+  brand_id TEXT NOT NULL REFERENCES brands(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content_type TEXT NOT NULL, -- post, caption, poster, competitor, inspiration
+  content TEXT NOT NULL DEFAULT '',
+  platform TEXT,              -- twitter, linkedin, instagram, tiktok, etc.
+  tone TEXT,
+  campaign TEXT,
+  sentiment TEXT NOT NULL DEFAULT 'positive', -- positive, negative
+  source_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Seed demo account (run once)
 INSERT INTO users (id, email, password_hash, name)
 VALUES ('demo-account-001', 'demo@brandpostinc.com', '$2b$12$rOI6f9QQqdvFA2UCqmki2.nW77en0F0J9YCoQkU./1tup9kFAGgh2', 'Demo Account')
