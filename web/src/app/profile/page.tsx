@@ -32,21 +32,21 @@ export default async function ProfilePage() {
                 {name}
               </p>
             )}
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">{email}</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-300">{email}</p>
           </div>
         </div>
 
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-800 mb-6">
           <div className="px-4 py-3">
-            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-0.5">
+            <p className="text-xs font-medium text-zinc-600 uppercase tracking-wide mb-0.5">
               Name
             </p>
             <p className="text-sm text-zinc-900 dark:text-zinc-50">
-              {name ?? <span className="text-zinc-400 italic">Not set</span>}
+              {name ?? <span className="text-zinc-600 italic">Not set</span>}
             </p>
           </div>
           <div className="px-4 py-3">
-            <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-0.5">
+            <p className="text-xs font-medium text-zinc-600 uppercase tracking-wide mb-0.5">
               Email
             </p>
             <p className="text-sm text-zinc-900 dark:text-zinc-50">{email}</p>

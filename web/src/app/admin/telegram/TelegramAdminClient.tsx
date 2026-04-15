@@ -185,7 +185,7 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
               <p className="font-medium text-zinc-900">
                 {credential.bot_username ? `@${credential.bot_username}` : "Bot connected"}
               </p>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-zinc-600 mt-0.5">
                 Channel: <code className="bg-zinc-100 px-1 rounded">{credential.chat_id}</code>
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
                   onChange={(e) => setBotToken(e.target.value)}
                   placeholder="123456:ABC-DEF..."
                   required
-                  className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                  className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-300"
                 />
               </div>
               <div>
@@ -222,7 +222,7 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
                   onChange={(e) => setChatId(e.target.value)}
                   placeholder="@mychannel or -100123456789"
                   required
-                  className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                  className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-300"
                 />
               </div>
             </div>
@@ -251,9 +251,9 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
                 rows={4}
                 maxLength={MAX_LENGTH}
                 placeholder="Write a message or caption…"
-                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 resize-none"
+                className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-300 resize-none"
               />
-              <p className={`text-xs mt-1 text-right ${remaining < 100 ? "text-red-500" : "text-zinc-400"}`}>
+              <p className={`text-xs mt-1 text-right ${remaining < 100 ? "text-red-500" : "text-zinc-600"}`}>
                 {remaining} characters remaining
               </p>
             </div>
@@ -337,14 +337,14 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
                         {post.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-zinc-400 text-xs">
+                    <td className="px-4 py-3 text-zinc-600 text-xs">
                       {post.telegram_message_id ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-right">
                       {post.status === "pending" && (
                         <button
                           onClick={() => handleCancel(post.id)}
-                          className="text-xs text-zinc-400 hover:text-red-500 transition-colors"
+                          className="text-xs text-zinc-600 hover:text-red-500 transition-colors"
                         >
                           Cancel
                         </button>
@@ -355,7 +355,7 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
               </tbody>
             </table>
           </div>
-          <p className="mt-2 text-xs text-zinc-400">
+          <p className="mt-2 text-xs text-zinc-600">
             Call{" "}
             <code className="bg-zinc-100 px-1 rounded">POST /api/telegram/process-queue</code>{" "}
             (with <code className="bg-zinc-100 px-1 rounded">x-cron-secret</code>) on a schedule to publish queued posts automatically.
@@ -364,7 +364,7 @@ export default function TelegramAdminClient({ credential: initial, posts: initia
       )}
 
       {!credential && posts.length === 0 && (
-        <div className="text-center py-12 text-zinc-400 text-sm">
+        <div className="text-center py-12 text-zinc-600 text-sm">
           Connect a Telegram bot to start posting.
         </div>
       )}

@@ -201,7 +201,7 @@ export default function EventsAdminClient({ events: initial }: Props) {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-zinc-400 mt-1">{MODES.find((m) => m.value === mode)?.hint}</p>
+            <p className="text-xs text-zinc-600 mt-1">{MODES.find((m) => m.value === mode)?.hint}</p>
           </div>
 
           {/* JSON mode */}
@@ -267,7 +267,7 @@ export default function EventsAdminClient({ events: initial }: Props) {
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
                 {Object.entries(fields).map(([k, v]) => (
                   <div key={k} className="flex gap-2 text-sm">
-                    <span className="text-zinc-400 font-mono text-xs shrink-0 w-24 truncate">{k}</span>
+                    <span className="text-zinc-600 font-mono text-xs shrink-0 w-24 truncate">{k}</span>
                     <span className="text-zinc-800 truncate">{String(v)}</span>
                   </div>
                 ))}

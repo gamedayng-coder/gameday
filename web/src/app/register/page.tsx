@@ -57,7 +57,7 @@ export default function RegisterPage() {
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
           Create an account
         </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">
+        <p className="text-sm text-zinc-500 dark:text-zinc-300 mb-8">
           Already have an account?{" "}
           <Link
             href="/login"
@@ -73,14 +73,14 @@ export default function RegisterPage() {
               htmlFor="name"
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1"
             >
-              Name <span className="text-zinc-400">(optional)</span>
+              Name <span className="text-zinc-600">(optional)</span>
             </label>
             <input
               id="name"
               name="name"
               type="text"
               autoComplete="name"
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
               placeholder="Your name"
             />
           </div>
@@ -98,7 +98,7 @@ export default function RegisterPage() {
               type="email"
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
               placeholder="you@example.com"
             />
           </div>
@@ -117,7 +117,7 @@ export default function RegisterPage() {
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
               placeholder="At least 8 characters"
             />
           </div>

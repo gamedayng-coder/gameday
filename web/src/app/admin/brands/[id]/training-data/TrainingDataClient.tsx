@@ -103,7 +103,7 @@ export default function TrainingDataClient({
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-1">
+      <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-300 mb-1">
         <Link href="/admin/brands" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">
           Brands
         </Link>
@@ -111,7 +111,7 @@ export default function TrainingDataClient({
         <span className="text-zinc-900 dark:text-zinc-50 font-medium">{brand.name}</span>
       </div>
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">Training Data</h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">
+      <p className="text-sm text-zinc-500 dark:text-zinc-300 mb-8">
         Examples agents use when generating content for <strong>{brand.name}</strong>.
       </p>
 
@@ -121,7 +121,7 @@ export default function TrainingDataClient({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">Content type</label>
+            <label className="block text-xs text-zinc-500 dark:text-zinc-300 mb-1">Content type</label>
             <select
               value={form.content_type}
               onChange={(e) => setForm((f) => ({ ...f, content_type: e.target.value as ContentType }))}
@@ -134,7 +134,7 @@ export default function TrainingDataClient({
           </div>
 
           <div>
-            <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">Platform</label>
+            <label className="block text-xs text-zinc-500 dark:text-zinc-300 mb-1">Platform</label>
             <select
               value={form.platform}
               onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value }))}
@@ -149,52 +149,52 @@ export default function TrainingDataClient({
         </div>
 
         <div>
-          <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">Content</label>
+          <label className="block text-xs text-zinc-500 dark:text-zinc-300 mb-1">Content</label>
           <textarea
             rows={3}
             value={form.content}
             onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
             placeholder="Paste or type the content example…"
-            className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50 resize-none"
+            className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50 resize-none"
           />
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">Tone</label>
+            <label className="block text-xs text-zinc-500 dark:text-zinc-300 mb-1">Tone</label>
             <input
               type="text"
               value={form.tone}
               onChange={(e) => setForm((f) => ({ ...f, tone: e.target.value }))}
               placeholder="e.g. energetic, warm"
-              className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
+              className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
             />
           </div>
           <div>
-            <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">Campaign</label>
+            <label className="block text-xs text-zinc-500 dark:text-zinc-300 mb-1">Campaign</label>
             <input
               type="text"
               value={form.campaign}
               onChange={(e) => setForm((f) => ({ ...f, campaign: e.target.value }))}
               placeholder="e.g. Summer 2026"
-              className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
+              className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
             />
           </div>
           <div>
-            <label className="block text-xs text-zinc-500 dark:text-zinc-400 mb-1">Source URL</label>
+            <label className="block text-xs text-zinc-500 dark:text-zinc-300 mb-1">Source URL</label>
             <input
               type="url"
               value={form.source_url}
               onChange={(e) => setForm((f) => ({ ...f, source_url: e.target.value }))}
               placeholder="https://…"
-              className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
+              className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
             />
           </div>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">Mark as:</span>
+            <span className="text-xs text-zinc-500 dark:text-zinc-300">Mark as:</span>
             {(["positive", "negative"] as Sentiment[]).map((s) => (
               <label key={s} className="flex items-center gap-1.5 cursor-pointer">
                 <input
@@ -223,7 +223,7 @@ export default function TrainingDataClient({
 
       {/* Filter bar */}
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">Filter:</span>
+        <span className="text-xs text-zinc-500 dark:text-zinc-300">Filter:</span>
         <select
           value={filter.content_type}
           onChange={(e) => setFilter((f) => ({ ...f, content_type: e.target.value }))}
@@ -243,14 +243,14 @@ export default function TrainingDataClient({
           <option value="positive">Good examples</option>
           <option value="negative">What to avoid</option>
         </select>
-        <span className="text-xs text-zinc-400 dark:text-zinc-500 ml-auto">
+        <span className="text-xs text-zinc-600 dark:text-zinc-500 ml-auto">
           {filtered.length} item{filtered.length !== 1 ? "s" : ""}
         </span>
       </div>
 
       {/* Items list */}
       {filtered.length === 0 ? (
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">No items yet. Add one above.</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-500">No items yet. Add one above.</p>
       ) : (
         <ul className="space-y-3">
           {filtered.map((item) => (
@@ -265,21 +265,21 @@ export default function TrainingDataClient({
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                       {CONTENT_TYPES.find((t) => t.value === item.content_type)?.label ?? item.content_type}
                     </span>
                     {item.platform && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                         {item.platform}
                       </span>
                     )}
                     {item.tone && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                         {item.tone}
                       </span>
                     )}
                     {item.campaign && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                         {item.campaign}
                       </span>
                     )}
@@ -299,7 +299,7 @@ export default function TrainingDataClient({
                       href={item.source_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 mt-1 inline-block truncate max-w-xs transition-colors"
+                      className="text-xs text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 mt-1 inline-block truncate max-w-xs transition-colors"
                     >
                       {item.source_url}
                     </a>

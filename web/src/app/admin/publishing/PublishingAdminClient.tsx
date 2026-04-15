@@ -344,7 +344,7 @@ export default function PublishingAdminClient({ routines: initialRoutines, sched
       <div>
         <h2 className="text-lg font-semibold text-zinc-800 mb-3">Posting Routines</h2>
         {routines.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-zinc-300 py-10 text-center text-zinc-400 text-sm">
+          <div className="rounded-xl border border-dashed border-zinc-300 py-10 text-center text-zinc-600 text-sm">
             No routines yet. Create one to automate content posting.
           </div>
         ) : (
@@ -440,7 +440,7 @@ export default function PublishingAdminClient({ routines: initialRoutines, sched
                 {dryRunResult.entries.map((e) => (
                   <tr key={e.id} className="bg-white hover:bg-zinc-50">
                     <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">
-                      {new Date(e.scheduled_at).toLocaleString()} <span className="text-zinc-400 text-xs">{e.timezone}</span>
+                      {new Date(e.scheduled_at).toLocaleString()} <span className="text-zinc-600 text-xs">{e.timezone}</span>
                     </td>
                     <td className="px-4 py-3 text-zinc-700 capitalize">{e.channel}</td>
                     <td className="px-4 py-3 text-zinc-500">{e.routine_name}</td>

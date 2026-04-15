@@ -137,7 +137,7 @@ export default function AnalyticsDashboardClient({ aggregates: initialAggregates
                 <h2 className="font-semibold text-zinc-800 text-sm">
                   {PLATFORM_LABELS[agg.platform] ?? agg.platform}
                 </h2>
-                <span className="text-xs text-zinc-400">{agg.total_posts} posts total</span>
+                <span className="text-xs text-zinc-600">{agg.total_posts} posts total</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 <Stat label="likes" value={agg.total_likes ?? 0} />
@@ -156,7 +156,7 @@ export default function AnalyticsDashboardClient({ aggregates: initialAggregates
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-zinc-200 p-8 text-center text-sm text-zinc-400">
+        <div className="rounded-xl border border-zinc-200 p-8 text-center text-sm text-zinc-600">
           No published posts yet. Post to a platform to see metrics here.
         </div>
       )}
@@ -219,7 +219,7 @@ export default function AnalyticsDashboardClient({ aggregates: initialAggregates
         )}
       </div>
 
-      <p className="text-xs text-zinc-400">
+      <p className="text-xs text-zinc-600">
         Call <code className="bg-zinc-100 px-1 rounded">POST /api/analytics/refresh</code>{" "}
         (with <code className="bg-zinc-100 px-1 rounded">x-cron-secret</code>) daily to keep metrics current.
         Twitter metrics are fetched live; LinkedIn and TikTok require additional OAuth scopes.
@@ -245,7 +245,7 @@ function PostTable<T extends { id: number; content: string; published_at: string
 }: PostTableProps<T>) {
   if (posts.length === 0) {
     return (
-      <div className="rounded-xl border border-zinc-200 p-6 text-center text-sm text-zinc-400">
+      <div className="rounded-xl border border-zinc-200 p-6 text-center text-sm text-zinc-600">
         No published posts.
       </div>
     );
@@ -287,7 +287,7 @@ function PostTable<T extends { id: number; content: string; published_at: string
                     </td>
                   ) : null
                 )}
-                <td className="px-4 py-3 text-zinc-400 text-xs whitespace-nowrap">
+                <td className="px-4 py-3 text-zinc-600 text-xs whitespace-nowrap">
                   {updatedAt ? new Date(updatedAt).toLocaleDateString() : "never"}
                 </td>
                 <td className="px-4 py-3 text-right">

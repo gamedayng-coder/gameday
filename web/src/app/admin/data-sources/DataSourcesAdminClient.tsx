@@ -157,7 +157,7 @@ export default function DataSourcesAdminClient({ sources: initial }: Props) {
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-zinc-600 mb-1">
-                API key / token {editingId && <span className="text-zinc-400">(leave blank to keep existing)</span>}
+                API key / token {editingId && <span className="text-zinc-600">(leave blank to keep existing)</span>}
               </label>
               <input
                 type="password"

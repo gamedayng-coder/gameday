@@ -49,7 +49,7 @@ export default function BrandsClient({ brands: initial }: { brands: Brand[] }) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">Brands</h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">
+      <p className="text-sm text-zinc-500 dark:text-zinc-300 mb-8">
         Each brand has its own training data library used by agents when generating content.
       </p>
 
@@ -59,7 +59,7 @@ export default function BrandsClient({ brands: initial }: { brands: Brand[] }) {
           placeholder="Brand name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-1 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
+          className="flex-1 text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-50"
         />
         <button
           type="submit"
@@ -75,7 +75,7 @@ export default function BrandsClient({ brands: initial }: { brands: Brand[] }) {
       )}
 
       {brands.length === 0 ? (
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">No brands yet. Add one above.</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-500">No brands yet. Add one above.</p>
       ) : (
         <ul className="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
           {brands.map((brand) => (
@@ -89,7 +89,7 @@ export default function BrandsClient({ brands: initial }: { brands: Brand[] }) {
               <div className="flex items-center gap-3">
                 <Link
                   href={`/admin/brands/${brand.id}/training-data`}
-                  className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+                  className="text-xs text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
                 >
                   Training data →
                 </Link>

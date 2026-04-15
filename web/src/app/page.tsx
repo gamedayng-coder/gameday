@@ -5,7 +5,7 @@ export default function Home() {
         <h1 className="text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
           BrandPost Inc.
         </h1>
-        <p className="text-xl text-zinc-500 dark:text-zinc-400 mb-8">
+        <p className="text-xl text-zinc-500 dark:text-zinc-300 mb-8">
           Online and social media communications, powered by modern tooling.
         </p>
         <div className="flex gap-4 justify-center">

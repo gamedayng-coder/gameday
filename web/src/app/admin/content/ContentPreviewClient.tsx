@@ -206,7 +206,7 @@ export default function ContentPreviewClient({ items: initial, posters, events }
         {/* Items list */}
         <div className="lg:col-span-1 space-y-2">
           {items.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-zinc-300 py-10 text-center text-zinc-400 text-sm">
+            <div className="rounded-xl border border-dashed border-zinc-300 py-10 text-center text-zinc-600 text-sm">
               No content items yet.
             </div>
           ) : (
@@ -222,10 +222,10 @@ export default function ContentPreviewClient({ items: initial, posters, events }
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <StatusBadge status={item.status} />
-                  <span className="text-xs text-zinc-400">{new Date(item.created_at).toLocaleDateString()}</span>
+                  <span className="text-xs text-zinc-600">{new Date(item.created_at).toLocaleDateString()}</span>
                 </div>
-                <p className="text-sm text-zinc-700 line-clamp-2">{item.caption || <span className="text-zinc-400 italic">No caption</span>}</p>
-                {item.event_title && <p className="text-xs text-zinc-400 mt-1">{item.event_title}</p>}
+                <p className="text-sm text-zinc-700 line-clamp-2">{item.caption || <span className="text-zinc-600 italic">No caption</span>}</p>
+                {item.event_title && <p className="text-xs text-zinc-600 mt-1">{item.event_title}</p>}
               </button>
             ))
           )}
@@ -240,7 +240,7 @@ export default function ContentPreviewClient({ items: initial, posters, events }
                 <img src={selected.poster_image_path} alt="Poster" className="w-full object-contain max-h-96" />
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-zinc-200 h-40 flex items-center justify-center text-zinc-400 text-sm">
+              <div className="rounded-xl border border-dashed border-zinc-200 h-40 flex items-center justify-center text-zinc-600 text-sm">
                 No poster attached
               </div>
             )}
@@ -249,7 +249,7 @@ export default function ContentPreviewClient({ items: initial, posters, events }
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-medium text-zinc-600">Base caption</label>
-                <span className="text-xs text-zinc-400">{baseCaption.length} chars</span>
+                <span className="text-xs text-zinc-600">{baseCaption.length} chars</span>
               </div>
               <textarea
                 value={baseCaption}
@@ -287,7 +287,7 @@ export default function ContentPreviewClient({ items: initial, posters, events }
               <div className="rounded-xl border border-zinc-200 bg-white p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-zinc-800">{platformMeta.label}</p>
-                  <span className={`text-xs ${currentCaption.length > platformMeta.limit * 0.9 ? "text-amber-600" : "text-zinc-400"}`}>
+                  <span className={`text-xs ${currentCaption.length > platformMeta.limit * 0.9 ? "text-amber-600" : "text-zinc-600"}`}>
                     {currentCaption.length} / {platformMeta.limit}
                   </span>
                 </div>
@@ -310,17 +310,17 @@ export default function ContentPreviewClient({ items: initial, posters, events }
                       >
                         Save
                       </button>
-                      <button onClick={() => setEditingCaption(null)} className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">
+                      <button onClick={() => setEditingCaption(null)} className="text-xs text-zinc-600 hover:text-zinc-600 transition-colors">
                         Cancel
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="group relative">
-                    <p className="text-sm text-zinc-700 whitespace-pre-wrap">{currentCaption || <span className="text-zinc-400 italic">Empty</span>}</p>
+                    <p className="text-sm text-zinc-700 whitespace-pre-wrap">{currentCaption || <span className="text-zinc-600 italic">Empty</span>}</p>
                     <button
                       onClick={() => setEditingCaption(activeTab)}
-                      className="absolute top-0 right-0 text-xs text-zinc-400 hover:text-zinc-700 transition-colors opacity-0 group-hover:opacity-100"
+                      className="absolute top-0 right-0 text-xs text-zinc-600 hover:text-zinc-700 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       Edit
                     </button>
@@ -380,7 +380,7 @@ export default function ContentPreviewClient({ items: initial, posters, events }
             )}
           </div>
         ) : (
-          <div className="lg:col-span-2 rounded-xl border border-dashed border-zinc-200 flex items-center justify-center text-zinc-400 text-sm h-64">
+          <div className="lg:col-span-2 rounded-xl border border-dashed border-zinc-200 flex items-center justify-center text-zinc-600 text-sm h-64">
             Select a content item to preview
           </div>
         )}
