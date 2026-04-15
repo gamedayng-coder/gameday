@@ -316,7 +316,7 @@ CREATE TABLE IF NOT EXISTS canva_oauth_state (
 
 -- Seed demo account (run once)
 INSERT INTO users (id, email, password_hash, name)
-VALUES ('demo-account-001', 'demo@gamedayng.com', '$2b$12$rOI6f9QQqdvFA2UCqmki2.nW77en0F0J9YCoQkU./1tup9kFAGgh2', 'Demo Account')
+VALUES ('demo-account-001', 'demo@brandpostinc.com', '$2b$12$rOI6f9QQqdvFA2UCqmki2.nW77en0F0J9YCoQkU./1tup9kFAGgh2', 'Demo Account')
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed default agent API key (SHA-256 of "brandpost-agent-key-default")

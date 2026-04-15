@@ -4,12 +4,12 @@ name: Deploy to Vercel (staging)
 #
 # One-time setup:
 #   1. Go to vercel.com → "Add New Project"
-#   2. Import gamedayng-coder/gameday from GitHub
+#   2. Import brandpostinc/brandpost from GitHub
 #   3. Set Root Directory to: web
 #   4. Vercel auto-detects Next.js — click Deploy
 #
 # After that, Vercel handles everything:
-#   - Production deploy on every push to main → gameday.vercel.app (or custom domain)
+#   - Production deploy on every push to main → brandpost.vercel.app (or custom domain)
 #   - Preview deploy on every pull request → unique preview URL per PR
 #
 # This workflow is a no-op placeholder. It exists so the deploy step is

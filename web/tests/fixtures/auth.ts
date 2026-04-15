@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 
 const TEST_USER = {
-  email: 'demo@gamedayng.com',
+  email: 'demo@brandpostinc.com',
   password: 'GameDay2026!',
 };
 
@@ -17,9 +17,12 @@ export async function login(page: Page) {
 }
 
 export async function logout(page: Page) {
-  // Click profile menu or logout button
-  await page.click('button:has-text("Profile"), a:has-text("Logout"), [data-testid="logout-btn"]');
-  await page.waitForURL('/login');
+  // Click profile link in nav, then click Sign out button on profile page
+  await page.click('a[href="/profile"]');
+  await page.waitForURL('/profile');
+  await page.click('button:has-text("Sign out")');
+  // signOut redirects to home page
+  await page.waitForURL('/');
 }
 
 export async function isAuthenticated(page: Page): Promise<boolean> {

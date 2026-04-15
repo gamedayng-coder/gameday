@@ -4,7 +4,7 @@ import { login, logout, isAuthenticated } from '../fixtures/auth';
 test.describe('Authentication', () => {
   test('should load login page', async ({ page }) => {
     await page.goto('/login');
-    await expect(page).toHaveTitle(/login|sign in/i);
+    await expect(page).toHaveTitle('BrandPost Inc.');
     await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
   });
@@ -24,7 +24,7 @@ test.describe('Authentication', () => {
     await login(page);
     await page.waitForTimeout(1000);
     await logout(page);
-    await expect(page).toHaveURL(/login/);
+    await expect(page).toHaveURL('/');
   });
 
   test('should reject invalid credentials', async ({ page }) => {

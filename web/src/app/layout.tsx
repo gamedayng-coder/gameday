@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GameDay Media",
-  description: "Online and social media communications platform",
+  title: "BrandPost Inc.",
+  description: "Internal brand operations hub",
 };
 
 export default function RootLayout({
