@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 
 export interface TwitterCredential {
   id: number;
+  user_id: string;
   twitter_user_id: string;
   twitter_username: string;
   access_token: string;
@@ -15,6 +16,7 @@ export type TwitterPostStatus = "pending" | "published" | "failed" | "cancelled"
 
 export interface TwitterPost {
   id: number;
+  user_id: string;
   content: string;
   poster_id: string | null;
   scheduled_at: string | null;
@@ -25,10 +27,11 @@ export interface TwitterPost {
   created_at: string;
 }
 
-export async function getTwitterCredential(): Promise<TwitterCredential | undefined> {
+export async function getTwitterCredential(userId: string): Promise<TwitterCredential | undefined> {
   const { data } = await supabase()
     .from("twitter_credentials")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -36,16 +39,19 @@ export async function getTwitterCredential(): Promise<TwitterCredential | undefi
 }
 
 export async function upsertTwitterCredential(
+  userId: string,
   twitterUserId: string,
   twitterUsername: string,
   accessToken: string,
   refreshToken: string | null,
   expiresAt: Date | null
 ): Promise<TwitterCredential> {
-  await supabase().from("twitter_credentials").delete().neq("id", 0);
+  // Delete existing credential for this user before inserting fresh one
+  await supabase().from("twitter_credentials").delete().eq("user_id", userId);
   const { data, error } = await supabase()
     .from("twitter_credentials")
     .insert({
+      user_id: userId,
       twitter_user_id: twitterUserId,
       twitter_username: twitterUsername,
       access_token: accessToken,
@@ -76,18 +82,19 @@ export async function updateTwitterTokens(
   if (error) throw error;
 }
 
-export async function deleteTwitterCredential(): Promise<void> {
-  await supabase().from("twitter_credentials").delete().neq("id", 0);
+export async function deleteTwitterCredential(userId: string): Promise<void> {
+  await supabase().from("twitter_credentials").delete().eq("user_id", userId);
 }
 
 export async function createTwitterPost(
+  userId: string,
   content: string,
   posterId: string | null,
   scheduledAt: Date | null
 ): Promise<TwitterPost> {
   const { data, error } = await supabase()
     .from("twitter_posts")
-    .insert({ content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
+    .insert({ user_id: userId, content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
     .select()
     .single();
   if (error) throw error;
@@ -99,12 +106,19 @@ export async function getTwitterPostById(id: number): Promise<TwitterPost | unde
   return data ?? undefined;
 }
 
-export async function getTwitterPosts(limit = 50): Promise<TwitterPost[]> {
-  const { data, error } = await supabase().from("twitter_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+export async function getTwitterPosts(userId: string, limit = 50): Promise<TwitterPost[]> {
+  const { data, error } = await supabase()
+    .from("twitter_posts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
   if (error) throw error;
   return data ?? [];
 }
 
+// Returns all due posts across all users (for process-queue cron).
+// Posts include user_id so the caller can fetch per-user credentials.
 export async function getDueTwitterPosts(): Promise<TwitterPost[]> {
   const now = new Date().toISOString();
   const { data, error } = await supabase()

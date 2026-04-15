@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
 
   // ── Queue approved content onto each connected channel ────────────────────
 
-  const twitterCred = await getTwitterCredential();
-  const linkedinCred = await getLinkedInCredential();
-  const telegramCred = await getTelegramCredential();
-  const tiktokCred = await getTikTokCredential();
+  const twitterCred = await getTwitterCredential(agent.userId);
+  const linkedinCred = await getLinkedInCredential(agent.userId);
+  const telegramCred = await getTelegramCredential(agent.userId);
+  const tiktokCred = await getTikTokCredential(agent.userId);
 
   for (const item of approvedItems) {
     const captions = (() => {
@@ -43,20 +43,20 @@ export async function POST(req: NextRequest) {
 
     if (twitterCred) {
       const text = (captions.twitter || item.caption).slice(0, 280);
-      if (text.trim()) { await createTwitterPost(text, item.poster_id ?? null, null); queued++; }
+      if (text.trim()) { await createTwitterPost(agent.userId, text, item.poster_id ?? null, null); queued++; }
     }
     if (linkedinCred) {
       const text = captions.linkedin || item.caption;
-      if (text.trim()) { await createLinkedInPost(text, item.poster_id ?? null, null); queued++; }
+      if (text.trim()) { await createLinkedInPost(agent.userId, text, item.poster_id ?? null, null); queued++; }
     }
     if (telegramCred) {
       const text = captions.telegram || item.caption;
-      if (text.trim()) { await createTelegramPost(text, item.poster_id ?? null, null); queued++; }
+      if (text.trim()) { await createTelegramPost(agent.userId, text, item.poster_id ?? null, null); queued++; }
     }
     // TikTok requires media — queue posts only when a poster image is attached
     if (tiktokCred && item.poster_id) {
       const text = captions.tiktok || item.caption;
-      if (text.trim()) { await createTikTokPost(text, item.poster_id, null); queued++; }
+      if (text.trim()) { await createTikTokPost(agent.userId, text, item.poster_id, null); queued++; }
     }
   }
 
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
   if (twitterCred) {
     channelResults.twitter = { published: 0, failed: 0, errors: [] };
     try {
-      const userClient = await getTwitterUserClient();
+      const userClient = await getTwitterUserClient(agent.userId);
       for (const post of await getDueTwitterPosts()) {
         try {
           const tweet = await userClient.v2.tweet({ text: post.content });
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     channelResults.linkedin = { published: 0, failed: 0, errors: [] };
     for (const post of await getDueLinkedInPosts()) {
       try {
-        const postId = await postToLinkedIn(post.content);
+        const postId = await postToLinkedIn(agent.userId, post.content);
         await markLinkedInPostPublished(post.id, postId);
         channelResults.linkedin.published++;
       } catch (e) {
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
     channelResults.telegram = { published: 0, failed: 0, errors: [] };
     for (const post of await getDueTelegramPosts()) {
       try {
-        const messageId = await sendTelegramMessage(post.content);
+        const messageId = await sendTelegramMessage(agent.userId, post.content);
         await markTelegramPostPublished(post.id, messageId);
         channelResults.telegram.published++;
       } catch (e) {

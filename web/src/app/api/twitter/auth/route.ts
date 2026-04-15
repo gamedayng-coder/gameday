@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase";
 // GET /api/twitter/auth — initiate OAuth 2.0 PKCE flow
 export async function GET() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -17,9 +17,10 @@ export async function GET() {
     scope: ["tweet.read", "tweet.write", "users.read", "offline.access"],
   });
 
+  // Store user_id in state so callback can associate the credential with this user
   await supabase()
     .from("twitter_oauth_state")
-    .upsert({ state, code_verifier: codeVerifier }, { onConflict: "state" });
+    .upsert({ state, user_id: session.user.id, code_verifier: codeVerifier }, { onConflict: "state" });
 
   return NextResponse.redirect(url);
 }
@@ -27,10 +28,10 @@ export async function GET() {
 // DELETE /api/twitter/auth — disconnect Twitter account
 export async function DELETE() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await deleteTwitterCredential();
+  await deleteTwitterCredential(session.user.id);
   return NextResponse.json({ success: true });
 }

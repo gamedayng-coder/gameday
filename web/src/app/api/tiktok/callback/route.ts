@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
   const { data: stored } = await supabase()
     .from("tiktok_oauth_state")
-    .select("state, code_verifier")
+    .select("user_id, code_verifier")
     .eq("state", state)
     .single();
 
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     const { openId: resolvedOpenId, displayName } = await getTikTokUserInfo(accessToken, openId);
     const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
-    await upsertTikTokCredential(resolvedOpenId, displayName, accessToken, refreshToken, expiresAt);
+    await upsertTikTokCredential(stored.user_id, resolvedOpenId, displayName, accessToken, refreshToken, expiresAt);
   } catch (e) {
     const msg = e instanceof Error ? encodeURIComponent(e.message) : "unknown";
     return NextResponse.redirect(`${baseUrl}/admin/tiktok?error=${msg}`);

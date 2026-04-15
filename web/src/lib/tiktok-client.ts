@@ -150,10 +150,10 @@ export async function getTikTokUserInfo(
   };
 }
 
-// Ensure we have a valid (non-expired) access token, refreshing if needed.
+// Ensure we have a valid (non-expired) access token for the given user, refreshing if needed.
 // Returns the active access token.
-async function getValidAccessToken(): Promise<string> {
-  const cred = await getTikTokCredential();
+async function getValidAccessToken(userId: string): Promise<string> {
+  const cred = await getTikTokCredential(userId);
   if (!cred) throw new Error("No TikTok account connected");
 
   if (cred.expires_at && cred.refresh_token) {
@@ -173,10 +173,11 @@ async function getValidAccessToken(): Promise<string> {
 // Post a photo to TikTok using the Content Posting API (FILE_UPLOAD).
 // imagePath must be a readable local file. Returns the publish_id.
 export async function postTikTokPhoto(
+  userId: string,
   caption: string,
   imagePath: string
 ): Promise<string> {
-  const accessToken = await getValidAccessToken();
+  const accessToken = await getValidAccessToken(userId);
 
   // Step 1: Initialize the photo post
   const initRes = await fetch(`${TIKTOK_API_BASE}/post/publish/content/init/`, {

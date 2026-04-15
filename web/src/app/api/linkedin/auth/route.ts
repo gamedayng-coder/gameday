@@ -8,16 +8,17 @@ import { randomBytes } from "crypto";
 // GET /api/linkedin/auth — initiate OAuth 2.0 Authorization Code flow
 export async function GET() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const state = randomBytes(16).toString("hex");
   const callbackUrl = `${process.env.AUTH_URL}/api/linkedin/callback`;
 
+  // Store user_id in state so callback can associate the credential with this user
   await supabase()
     .from("linkedin_oauth_state")
-    .upsert({ state }, { onConflict: "state" });
+    .upsert({ state, user_id: session.user.id }, { onConflict: "state" });
 
   const authUrl = buildLinkedInAuthUrl(callbackUrl, state);
   return NextResponse.redirect(authUrl);
@@ -26,10 +27,10 @@ export async function GET() {
 // DELETE /api/linkedin/auth — disconnect LinkedIn account
 export async function DELETE() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await deleteLinkedInCredential();
+  await deleteLinkedInCredential(session.user.id);
   return NextResponse.json({ success: true });
 }

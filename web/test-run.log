@@ -1,0 +1,1025 @@
+
+Running 78 tests using 1 worker
+
+  ✘   1 [chromium] › tests/e2e/agent-api.spec.ts:7:7 › Agent API Endpoints › should accept bearer token authentication (309ms)
+  ✓   2 [chromium] › tests/e2e/agent-api.spec.ts:18:7 › Agent API Endpoints › GET /api/agent/sync should return valid response (925ms)
+  ✓   3 [chromium] › tests/e2e/agent-api.spec.ts:31:7 › Agent API Endpoints › POST /api/agent/sync should accept request body (179ms)
+  ✘   4 [chromium] › tests/e2e/agent-api.spec.ts:45:7 › Agent API Endpoints › GET /api/agent/generate should be callable (204ms)
+  ✓   5 [chromium] › tests/e2e/agent-api.spec.ts:55:7 › Agent API Endpoints › POST /api/agent/generate should accept payload (279ms)
+  ✘   6 [chromium] › tests/e2e/agent-api.spec.ts:70:7 › Agent API Endpoints › POST /api/agent/queue should queue content (156ms)
+  ✓   7 [chromium] › tests/e2e/agent-api.spec.ts:85:7 › Agent API Endpoints › POST /api/agent/publish should publish content (254ms)
+  ✘   8 [chromium] › tests/e2e/agent-api.spec.ts:100:7 › Agent API Endpoints › should reject requests without authentication (172ms)
+  ✘   9 [chromium] › tests/e2e/agent-api.spec.ts:107:7 › Agent API Endpoints › should reject requests with invalid token (237ms)
+  ✓  10 [chromium] › tests/e2e/agent-api.spec.ts:117:7 › Agent API Endpoints › should validate request payload format (282ms)
+  ✘  11 [chromium] › tests/e2e/agent-api.spec.ts:130:7 › Agent API Endpoints › API response should include proper headers (163ms)
+  ✘  12 [chromium] › tests/e2e/auth.spec.ts:5:7 › Authentication › should load login page (16ms)
+  ✘  13 [chromium] › tests/e2e/auth.spec.ts:12:7 › Authentication › should login with valid credentials (14ms)
+  ✘  14 [chromium] › tests/e2e/auth.spec.ts:17:7 › Authentication › should maintain session after login (11ms)
+  ✘  15 [chromium] › tests/e2e/auth.spec.ts:23:7 › Authentication › should logout successfully (5ms)
+  ✘  16 [chromium] › tests/e2e/auth.spec.ts:30:7 › Authentication › should reject invalid credentials (7ms)
+  ✘  17 [chromium] › tests/e2e/auth.spec.ts:42:7 › Authentication › should require email field (8ms)
+  ✘  18 [chromium] › tests/e2e/auth.spec.ts:52:7 › Authentication › should require password field (9ms)
+  ✘  19 [chromium] › tests/e2e/content-generation.spec.ts:9:7 › Content Generation › should navigate to content page (8ms)
+  ✘  20 [chromium] › tests/e2e/content-generation.spec.ts:15:7 › Content Generation › should display content list (9ms)
+  ✘  21 [chromium] › tests/e2e/content-generation.spec.ts:24:7 › Content Generation › should create new content (12ms)
+  ✘  22 [chromium] › tests/e2e/content-generation.spec.ts:50:7 › Content Generation › should generate AI graphic via Canva (7ms)
+  ✘  23 [chromium] › tests/e2e/content-generation.spec.ts:73:7 › Content Generation › should preview generated content (13ms)
+  ✘  24 [chromium] › tests/e2e/content-generation.spec.ts:90:7 › Content Generation › should display caption generation options (9ms)
+  ✘  25 [chromium] › tests/e2e/content-generation.spec.ts:102:7 › Content Generation › should validate content before publishing (13ms)
+  ✘  26 [chromium] › tests/e2e/content-generation.spec.ts:116:7 › Content Generation › should handle content generation errors gracefully (6ms)
+  ✘  27 [chromium] › tests/e2e/data-sources.spec.ts:9:7 › Data Source Configuration › should navigate to data sources page (4ms)
+  ✘  28 [chromium] › tests/e2e/data-sources.spec.ts:15:7 › Data Source Configuration › should display data sources list (3ms)
+  ✘  29 [chromium] › tests/e2e/data-sources.spec.ts:24:7 › Data Source Configuration › should create a new JSON data source (3ms)
+  ✘  30 [chromium] › tests/e2e/data-sources.spec.ts:56:7 › Data Source Configuration › should test data source connection (8ms)
+  ✘  31 [chromium] › tests/e2e/data-sources.spec.ts:77:7 › Data Source Configuration › should display API key configuration (7ms)
+  ✘  32 [chromium] › tests/e2e/data-sources.spec.ts:89:7 › Data Source Configuration › should verify multi-tenant data isolation (4ms)
+  ✘  33 [chromium] › tests/e2e/multi-tenant.spec.ts:9:7 › Multi-Tenant Isolation › should not expose other tenant data in API responses (14ms)
+  ✘  34 [chromium] › tests/e2e/multi-tenant.spec.ts:32:7 › Multi-Tenant Isolation › should not expose tenant in URLs (24ms)
+  ✘  35 [chromium] › tests/e2e/multi-tenant.spec.ts:41:7 › Multi-Tenant Isolation › should enforce session isolation (10ms)
+  ✘  36 [chromium] › tests/e2e/multi-tenant.spec.ts:63:7 › Multi-Tenant Isolation › should validate user ownership of resources (5ms)
+  ✘  37 [chromium] › tests/e2e/multi-tenant.spec.ts:88:7 › Multi-Tenant Isolation › should not expose credentials across tenants (9ms)
+  ✘  38 [chromium] › tests/e2e/multi-tenant.spec.ts:109:7 › Multi-Tenant Isolation › should prevent cross-tenant data access via API (7ms)
+  ✘  39 [chromium] › tests/e2e/multi-tenant.spec.ts:135:7 › Multi-Tenant Isolation › brand kit and guidelines should be tenant-specific (6ms)
+  ✘  40 [firefox] › tests/e2e/agent-api.spec.ts:7:7 › Agent API Endpoints › should accept bearer token authentication (203ms)
+  ✓  41 [firefox] › tests/e2e/agent-api.spec.ts:18:7 › Agent API Endpoints › GET /api/agent/sync should return valid response (203ms)
+  ✓  42 [firefox] › tests/e2e/agent-api.spec.ts:31:7 › Agent API Endpoints › POST /api/agent/sync should accept request body (143ms)
+  ✘  43 [firefox] › tests/e2e/agent-api.spec.ts:45:7 › Agent API Endpoints › GET /api/agent/generate should be callable (162ms)
+  ✓  44 [firefox] › tests/e2e/agent-api.spec.ts:55:7 › Agent API Endpoints › POST /api/agent/generate should accept payload (229ms)
+  ✘  45 [firefox] › tests/e2e/agent-api.spec.ts:70:7 › Agent API Endpoints › POST /api/agent/queue should queue content (144ms)
+  ✓  46 [firefox] › tests/e2e/agent-api.spec.ts:85:7 › Agent API Endpoints › POST /api/agent/publish should publish content (231ms)
+  ✘  47 [firefox] › tests/e2e/agent-api.spec.ts:100:7 › Agent API Endpoints › should reject requests without authentication (138ms)
+  ✘  48 [firefox] › tests/e2e/agent-api.spec.ts:107:7 › Agent API Endpoints › should reject requests with invalid token (238ms)
+  ✓  49 [firefox] › tests/e2e/agent-api.spec.ts:117:7 › Agent API Endpoints › should validate request payload format (377ms)
+  ✘  50 [firefox] › tests/e2e/agent-api.spec.ts:130:7 › Agent API Endpoints › API response should include proper headers (189ms)
+  ✘  51 [firefox] › tests/e2e/auth.spec.ts:5:7 › Authentication › should load login page (24ms)
+  ✘  52 [firefox] › tests/e2e/auth.spec.ts:12:7 › Authentication › should login with valid credentials (22ms)
+  ✘  53 [firefox] › tests/e2e/auth.spec.ts:17:7 › Authentication › should maintain session after login (3ms)
+  ✘  54 [firefox] › tests/e2e/auth.spec.ts:23:7 › Authentication › should logout successfully (8ms)
+  ✘  55 [firefox] › tests/e2e/auth.spec.ts:30:7 › Authentication › should reject invalid credentials (3ms)
+  ✘  56 [firefox] › tests/e2e/auth.spec.ts:42:7 › Authentication › should require email field (12ms)
+  ✘  57 [firefox] › tests/e2e/auth.spec.ts:52:7 › Authentication › should require password field (4ms)
+  ✘  58 [firefox] › tests/e2e/content-generation.spec.ts:9:7 › Content Generation › should navigate to content page (5ms)
+  ✘  59 [firefox] › tests/e2e/content-generation.spec.ts:15:7 › Content Generation › should display content list (6ms)
+  ✘  60 [firefox] › tests/e2e/content-generation.spec.ts:24:7 › Content Generation › should create new content (11ms)
+  ✘  61 [firefox] › tests/e2e/content-generation.spec.ts:50:7 › Content Generation › should generate AI graphic via Canva (10ms)
+  ✘  62 [firefox] › tests/e2e/content-generation.spec.ts:73:7 › Content Generation › should preview generated content (5ms)
+  ✘  63 [firefox] › tests/e2e/content-generation.spec.ts:90:7 › Content Generation › should display caption generation options (6ms)
+  ✘  64 [firefox] › tests/e2e/content-generation.spec.ts:102:7 › Content Generation › should validate content before publishing (5ms)
+  ✘  65 [firefox] › tests/e2e/content-generation.spec.ts:116:7 › Content Generation › should handle content generation errors gracefully (4ms)
+  ✘  66 [firefox] › tests/e2e/data-sources.spec.ts:9:7 › Data Source Configuration › should navigate to data sources page (4ms)
+  ✘  67 [firefox] › tests/e2e/data-sources.spec.ts:15:7 › Data Source Configuration › should display data sources list (15ms)
+node:internal/modules/cjs/loader:1459
+  throw err;
+  ^
+
+Error: Cannot find module 'playwright-core/lib/bootstrap'
+Require stack:
+- /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/node_modules/playwright/lib/common/process.js
+[90m    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)[39m
+[90m    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)[39m
+[90m    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)[39m
+[90m    at Module._load (node:internal/modules/cjs/loader:1242:25)[39m
+[90m    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)[39m
+[90m    at Module.require (node:internal/modules/cjs/loader:1556:12)[39m
+[90m    at require (node:internal/modules/helpers:152:16)[39m
+    at Object.<anonymous> [90m(/paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/[39mnode_modules/[4mplaywright[24m/lib/common/process.js:24:24[90m)[39m
+[90m    at Module._compile (node:internal/modules/cjs/loader:1812:14)[39m
+[90m    at Object..js (node:internal/modules/cjs/loader:1943:10)[39m {
+  code: [32m'MODULE_NOT_FOUND'[39m,
+  requireStack: [
+    [32m'/paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/node_modules/playwright/lib/common/process.js'[39m
+  ]
+}
+
+Node.js v24.14.1
+  ✘  68 [firefox] › tests/e2e/data-sources.spec.ts:24:7 › Data Source Configuration › should create a new JSON data source (0ms)
+  -  69 [firefox] › tests/e2e/data-sources.spec.ts:56:7 › Data Source Configuration › should test data source connection
+  -  70 [firefox] › tests/e2e/data-sources.spec.ts:77:7 › Data Source Configuration › should display API key configuration
+  -  71 [firefox] › tests/e2e/data-sources.spec.ts:89:7 › Data Source Configuration › should verify multi-tenant data isolation
+  ✘  72 [firefox] › tests/e2e/multi-tenant.spec.ts:9:7 › Multi-Tenant Isolation › should not expose other tenant data in API responses (0ms)
+  -  73 [firefox] › tests/e2e/multi-tenant.spec.ts:32:7 › Multi-Tenant Isolation › should not expose tenant in URLs
+  -  74 [firefox] › tests/e2e/multi-tenant.spec.ts:41:7 › Multi-Tenant Isolation › should enforce session isolation
+  -  75 [firefox] › tests/e2e/multi-tenant.spec.ts:63:7 › Multi-Tenant Isolation › should validate user ownership of resources
+  -  76 [firefox] › tests/e2e/multi-tenant.spec.ts:88:7 › Multi-Tenant Isolation › should not expose credentials across tenants
+  -  77 [firefox] › tests/e2e/multi-tenant.spec.ts:109:7 › Multi-Tenant Isolation › should prevent cross-tenant data access via API
+  -  78 [firefox] › tests/e2e/multi-tenant.spec.ts:135:7 › Multi-Tenant Isolation › brand kit and guidelines should be tenant-specific
+
+
+  1) [chromium] › tests/e2e/agent-api.spec.ts:7:7 › Agent API Endpoints › should accept bearer token authentication 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      13 |
+      14 |     // Should either succeed or reject with auth error (not 404)
+    > 15 |     expect([200, 400, 401, 403].includes(response.status())).toBe(true);
+         |                                                              ^
+      16 |   });
+      17 |
+      18 |   test('GET /api/agent/sync should return valid response', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:15:62
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-023e2-bearer-token-authentication-chromium/error-context.md
+
+  2) [chromium] › tests/e2e/agent-api.spec.ts:45:7 › Agent API Endpoints › GET /api/agent/generate should be callable 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      50 |     });
+      51 |
+    > 52 |     expect([200, 400, 401, 403].includes(response.status())).toBe(true);
+         |                                                              ^
+      53 |   });
+      54 |
+      55 |   test('POST /api/agent/generate should accept payload', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:52:62
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-66a79-generate-should-be-callable-chromium/error-context.md
+
+  3) [chromium] › tests/e2e/agent-api.spec.ts:70:7 › Agent API Endpoints › POST /api/agent/queue should queue content 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      80 |     });
+      81 |
+    > 82 |     expect([200, 400, 401, 403].includes(response.status())).toBe(true);
+         |                                                              ^
+      83 |   });
+      84 |
+      85 |   test('POST /api/agent/publish should publish content', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:82:62
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-afb6b--queue-should-queue-content-chromium/error-context.md
+
+  4) [chromium] › tests/e2e/agent-api.spec.ts:100:7 › Agent API Endpoints › should reject requests without authentication 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      102 |
+      103 |     // Should reject unauthorized requests
+    > 104 |     expect([401, 403].includes(response.status())).toBe(true);
+          |                                                    ^
+      105 |   });
+      106 |
+      107 |   test('should reject requests with invalid token', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:104:52
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-d4ad2-ests-without-authentication-chromium/error-context.md
+
+  5) [chromium] › tests/e2e/agent-api.spec.ts:107:7 › Agent API Endpoints › should reject requests with invalid token 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      112 |     });
+      113 |
+    > 114 |     expect([401, 403].includes(response.status())).toBe(true);
+          |                                                    ^
+      115 |   });
+      116 |
+      117 |   test('should validate request payload format', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:114:52
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-8ea98-requests-with-invalid-token-chromium/error-context.md
+
+  6) [chromium] › tests/e2e/agent-api.spec.ts:130:7 › Agent API Endpoints › API response should include proper headers 
+
+    TypeError: [2mexpect([22m[31mreceived[39m[2m).[22mtoMatch[2m([22m[32mexpected[39m[2m)[22m
+
+    [1mMatcher error[22m: [31mreceived[39m value must be a string
+
+    Received has value: [31mundefined[39m
+
+      135 |     });
+      136 |
+    > 137 |     expect(response.headers()['content-type']).toMatch(/json/i);
+          |                                                ^
+      138 |   });
+      139 | });
+      140 |
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:137:48
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-e0a47-ould-include-proper-headers-chromium/error-context.md
+
+  7) [chromium] › tests/e2e/auth.spec.ts:5:7 › Authentication › should load login page ─────────────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-load-login-page-chromium/error-context.md
+
+  8) [chromium] › tests/e2e/auth.spec.ts:12:7 › Authentication › should login with valid credentials 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-login-with-valid-credentials-chromium/error-context.md
+
+  9) [chromium] › tests/e2e/auth.spec.ts:17:7 › Authentication › should maintain session after login 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-maintain-session-after-login-chromium/error-context.md
+
+  10) [chromium] › tests/e2e/auth.spec.ts:23:7 › Authentication › should logout successfully ───────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-logout-successfully-chromium/error-context.md
+
+  11) [chromium] › tests/e2e/auth.spec.ts:30:7 › Authentication › should reject invalid credentials 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-reject-invalid-credentials-chromium/error-context.md
+
+  12) [chromium] › tests/e2e/auth.spec.ts:42:7 › Authentication › should require email field ───────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-require-email-field-chromium/error-context.md
+
+  13) [chromium] › tests/e2e/auth.spec.ts:52:7 › Authentication › should require password field ────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-require-password-field-chromium/error-context.md
+
+  14) [chromium] › tests/e2e/content-generation.spec.ts:9:7 › Content Generation › should navigate to content page 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-7c0e5-ld-navigate-to-content-page-chromium/error-context.md
+
+  15) [chromium] › tests/e2e/content-generation.spec.ts:15:7 › Content Generation › should display content list 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-36502-should-display-content-list-chromium/error-context.md
+
+  16) [chromium] › tests/e2e/content-generation.spec.ts:24:7 › Content Generation › should create new content 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-2f5a9-n-should-create-new-content-chromium/error-context.md
+
+  17) [chromium] › tests/e2e/content-generation.spec.ts:50:7 › Content Generation › should generate AI graphic via Canva 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-46fc9-nerate-AI-graphic-via-Canva-chromium/error-context.md
+
+  18) [chromium] › tests/e2e/content-generation.spec.ts:73:7 › Content Generation › should preview generated content 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-87e32-d-preview-generated-content-chromium/error-context.md
+
+  19) [chromium] › tests/e2e/content-generation.spec.ts:90:7 › Content Generation › should display caption generation options 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-1b2e3--caption-generation-options-chromium/error-context.md
+
+  20) [chromium] › tests/e2e/content-generation.spec.ts:102:7 › Content Generation › should validate content before publishing 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-d6e94-e-content-before-publishing-chromium/error-context.md
+
+  21) [chromium] › tests/e2e/content-generation.spec.ts:116:7 › Content Generation › should handle content generation errors gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-15717-eneration-errors-gracefully-chromium/error-context.md
+
+  22) [chromium] › tests/e2e/data-sources.spec.ts:9:7 › Data Source Configuration › should navigate to data sources page 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-7d60e-vigate-to-data-sources-page-chromium/error-context.md
+
+  23) [chromium] › tests/e2e/data-sources.spec.ts:15:7 › Data Source Configuration › should display data sources list 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-5bcaa-d-display-data-sources-list-chromium/error-context.md
+
+  24) [chromium] › tests/e2e/data-sources.spec.ts:24:7 › Data Source Configuration › should create a new JSON data source 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-8918d-eate-a-new-JSON-data-source-chromium/error-context.md
+
+  25) [chromium] › tests/e2e/data-sources.spec.ts:56:7 › Data Source Configuration › should test data source connection 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-6c5d2-test-data-source-connection-chromium/error-context.md
+
+  26) [chromium] › tests/e2e/data-sources.spec.ts:77:7 › Data Source Configuration › should display API key configuration 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-12581-splay-API-key-configuration-chromium/error-context.md
+
+  27) [chromium] › tests/e2e/data-sources.spec.ts:89:7 › Data Source Configuration › should verify multi-tenant data isolation 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-a7301-multi-tenant-data-isolation-chromium/error-context.md
+
+  28) [chromium] › tests/e2e/multi-tenant.spec.ts:9:7 › Multi-Tenant Isolation › should not expose other tenant data in API responses 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--a7509-enant-data-in-API-responses-chromium/error-context.md
+
+  29) [chromium] › tests/e2e/multi-tenant.spec.ts:32:7 › Multi-Tenant Isolation › should not expose tenant in URLs 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--38993-d-not-expose-tenant-in-URLs-chromium/error-context.md
+
+  30) [chromium] › tests/e2e/multi-tenant.spec.ts:41:7 › Multi-Tenant Isolation › should enforce session isolation 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--766b9-d-enforce-session-isolation-chromium/error-context.md
+
+  31) [chromium] › tests/e2e/multi-tenant.spec.ts:63:7 › Multi-Tenant Isolation › should validate user ownership of resources 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--f01af-user-ownership-of-resources-chromium/error-context.md
+
+  32) [chromium] › tests/e2e/multi-tenant.spec.ts:88:7 › Multi-Tenant Isolation › should not expose credentials across tenants 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--00fda--credentials-across-tenants-chromium/error-context.md
+
+  33) [chromium] › tests/e2e/multi-tenant.spec.ts:109:7 › Multi-Tenant Isolation › should prevent cross-tenant data access via API 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--d084c--tenant-data-access-via-API-chromium/error-context.md
+
+  34) [chromium] › tests/e2e/multi-tenant.spec.ts:135:7 › Multi-Tenant Isolation › brand kit and guidelines should be tenant-specific 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/multi-tenant-Multi-Tenant--65f72-s-should-be-tenant-specific-chromium/error-context.md
+
+  35) [firefox] › tests/e2e/agent-api.spec.ts:7:7 › Agent API Endpoints › should accept bearer token authentication 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      13 |
+      14 |     // Should either succeed or reject with auth error (not 404)
+    > 15 |     expect([200, 400, 401, 403].includes(response.status())).toBe(true);
+         |                                                              ^
+      16 |   });
+      17 |
+      18 |   test('GET /api/agent/sync should return valid response', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:15:62
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-023e2-bearer-token-authentication-firefox/error-context.md
+
+  36) [firefox] › tests/e2e/agent-api.spec.ts:45:7 › Agent API Endpoints › GET /api/agent/generate should be callable 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      50 |     });
+      51 |
+    > 52 |     expect([200, 400, 401, 403].includes(response.status())).toBe(true);
+         |                                                              ^
+      53 |   });
+      54 |
+      55 |   test('POST /api/agent/generate should accept payload', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:52:62
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-66a79-generate-should-be-callable-firefox/error-context.md
+
+  37) [firefox] › tests/e2e/agent-api.spec.ts:70:7 › Agent API Endpoints › POST /api/agent/queue should queue content 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      80 |     });
+      81 |
+    > 82 |     expect([200, 400, 401, 403].includes(response.status())).toBe(true);
+         |                                                              ^
+      83 |   });
+      84 |
+      85 |   test('POST /api/agent/publish should publish content', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:82:62
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-afb6b--queue-should-queue-content-firefox/error-context.md
+
+  38) [firefox] › tests/e2e/agent-api.spec.ts:100:7 › Agent API Endpoints › should reject requests without authentication 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      102 |
+      103 |     // Should reject unauthorized requests
+    > 104 |     expect([401, 403].includes(response.status())).toBe(true);
+          |                                                    ^
+      105 |   });
+      106 |
+      107 |   test('should reject requests with invalid token', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:104:52
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-d4ad2-ests-without-authentication-firefox/error-context.md
+
+  39) [firefox] › tests/e2e/agent-api.spec.ts:107:7 › Agent API Endpoints › should reject requests with invalid token 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      112 |     });
+      113 |
+    > 114 |     expect([401, 403].includes(response.status())).toBe(true);
+          |                                                    ^
+      115 |   });
+      116 |
+      117 |   test('should validate request payload format', async ({ request }) => {
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:114:52
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-8ea98-requests-with-invalid-token-firefox/error-context.md
+
+  40) [firefox] › tests/e2e/agent-api.spec.ts:130:7 › Agent API Endpoints › API response should include proper headers 
+
+    TypeError: [2mexpect([22m[31mreceived[39m[2m).[22mtoMatch[2m([22m[32mexpected[39m[2m)[22m
+
+    [1mMatcher error[22m: [31mreceived[39m value must be a string
+
+    Received has value: [31mundefined[39m
+
+      135 |     });
+      136 |
+    > 137 |     expect(response.headers()['content-type']).toMatch(/json/i);
+          |                                                ^
+      138 |   });
+      139 | });
+      140 |
+        at /paperclip/instances/default/projects/88eb4112-bae5-4f55-b881-6c3bc5ecadbc/02b5890b-fe6a-48b9-8e19-5a9ee539456f/_default/web/tests/e2e/agent-api.spec.ts:137:48
+
+    Error Context: test-results/agent-api-Agent-API-Endpoi-e0a47-ould-include-proper-headers-firefox/error-context.md
+
+  41) [firefox] › tests/e2e/auth.spec.ts:5:7 › Authentication › should load login page ─────────────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-load-login-page-firefox/error-context.md
+
+  42) [firefox] › tests/e2e/auth.spec.ts:12:7 › Authentication › should login with valid credentials 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-login-with-valid-credentials-firefox/error-context.md
+
+  43) [firefox] › tests/e2e/auth.spec.ts:17:7 › Authentication › should maintain session after login 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-maintain-session-after-login-firefox/error-context.md
+
+  44) [firefox] › tests/e2e/auth.spec.ts:23:7 › Authentication › should logout successfully ────────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-logout-successfully-firefox/error-context.md
+
+  45) [firefox] › tests/e2e/auth.spec.ts:30:7 › Authentication › should reject invalid credentials ─
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-reject-invalid-credentials-firefox/error-context.md
+
+  46) [firefox] › tests/e2e/auth.spec.ts:42:7 › Authentication › should require email field ────────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-require-email-field-firefox/error-context.md
+
+  47) [firefox] › tests/e2e/auth.spec.ts:52:7 › Authentication › should require password field ─────
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-Authentication-should-require-password-field-firefox/error-context.md
+
+  48) [firefox] › tests/e2e/content-generation.spec.ts:9:7 › Content Generation › should navigate to content page 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-7c0e5-ld-navigate-to-content-page-firefox/error-context.md
+
+  49) [firefox] › tests/e2e/content-generation.spec.ts:15:7 › Content Generation › should display content list 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-36502-should-display-content-list-firefox/error-context.md
+
+  50) [firefox] › tests/e2e/content-generation.spec.ts:24:7 › Content Generation › should create new content 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-2f5a9-n-should-create-new-content-firefox/error-context.md
+
+  51) [firefox] › tests/e2e/content-generation.spec.ts:50:7 › Content Generation › should generate AI graphic via Canva 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-46fc9-nerate-AI-graphic-via-Canva-firefox/error-context.md
+
+  52) [firefox] › tests/e2e/content-generation.spec.ts:73:7 › Content Generation › should preview generated content 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-87e32-d-preview-generated-content-firefox/error-context.md
+
+  53) [firefox] › tests/e2e/content-generation.spec.ts:90:7 › Content Generation › should display caption generation options 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-1b2e3--caption-generation-options-firefox/error-context.md
+
+  54) [firefox] › tests/e2e/content-generation.spec.ts:102:7 › Content Generation › should validate content before publishing 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-d6e94-e-content-before-publishing-firefox/error-context.md
+
+  55) [firefox] › tests/e2e/content-generation.spec.ts:116:7 › Content Generation › should handle content generation errors gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/content-generation-Content-15717-eneration-errors-gracefully-firefox/error-context.md
+
+  56) [firefox] › tests/e2e/data-sources.spec.ts:9:7 › Data Source Configuration › should navigate to data sources page 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-7d60e-vigate-to-data-sources-page-firefox/error-context.md
+
+  57) [firefox] › tests/e2e/data-sources.spec.ts:15:7 › Data Source Configuration › should display data sources list 
+
+    Error: browserType.launch: Executable doesn't exist at /paperclip/.cache/ms-playwright/firefox-1511/firefox/firefox
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/data-sources-Data-Source-C-5bcaa-d-display-data-sources-list-firefox/error-context.md
+
+  58) [firefox] › tests/e2e/data-sources.spec.ts:24:7 › Data Source Configuration › should create a new JSON data source 
+
+    Error: worker process exited unexpectedly (code=1, signal=null)
+
+  59) [firefox] › tests/e2e/multi-tenant.spec.ts:9:7 › Multi-Tenant Isolation › should not expose other tenant data in API responses 
+
+    Error: worker process exited unexpectedly (code=1, signal=null)
+
+  59 failed
+    [chromium] › tests/e2e/agent-api.spec.ts:7:7 › Agent API Endpoints › should accept bearer token authentication 
+    [chromium] › tests/e2e/agent-api.spec.ts:45:7 › Agent API Endpoints › GET /api/agent/generate should be callable 
+    [chromium] › tests/e2e/agent-api.spec.ts:70:7 › Agent API Endpoints › POST /api/agent/queue should queue content 
+    [chromium] › tests/e2e/agent-api.spec.ts:100:7 › Agent API Endpoints › should reject requests without authentication 
+    [chromium] › tests/e2e/agent-api.spec.ts:107:7 › Agent API Endpoints › should reject requests with invalid token 
+    [chromium] › tests/e2e/agent-api.spec.ts:130:7 › Agent API Endpoints › API response should include proper headers 
+    [chromium] › tests/e2e/auth.spec.ts:5:7 › Authentication › should load login page ──────────────
+    [chromium] › tests/e2e/auth.spec.ts:12:7 › Authentication › should login with valid credentials 
+    [chromium] › tests/e2e/auth.spec.ts:17:7 › Authentication › should maintain session after login 
+    [chromium] › tests/e2e/auth.spec.ts:23:7 › Authentication › should logout successfully ─────────
+    [chromium] › tests/e2e/auth.spec.ts:30:7 › Authentication › should reject invalid credentials ──
+    [chromium] › tests/e2e/auth.spec.ts:42:7 › Authentication › should require email field ─────────
+    [chromium] › tests/e2e/auth.spec.ts:52:7 › Authentication › should require password field ──────
+    [chromium] › tests/e2e/content-generation.spec.ts:9:7 › Content Generation › should navigate to content page 
+    [chromium] › tests/e2e/content-generation.spec.ts:15:7 › Content Generation › should display content list 
+    [chromium] › tests/e2e/content-generation.spec.ts:24:7 › Content Generation › should create new content 
+    [chromium] › tests/e2e/content-generation.spec.ts:50:7 › Content Generation › should generate AI graphic via Canva 
+    [chromium] › tests/e2e/content-generation.spec.ts:73:7 › Content Generation › should preview generated content 
+    [chromium] › tests/e2e/content-generation.spec.ts:90:7 › Content Generation › should display caption generation options 
+    [chromium] › tests/e2e/content-generation.spec.ts:102:7 › Content Generation › should validate content before publishing 
+    [chromium] › tests/e2e/content-generation.spec.ts:116:7 › Content Generation › should handle content generation errors gracefully 
+    [chromium] › tests/e2e/data-sources.spec.ts:9:7 › Data Source Configuration › should navigate to data sources page 
+    [chromium] › tests/e2e/data-sources.spec.ts:15:7 › Data Source Configuration › should display data sources list 
+    [chromium] › tests/e2e/data-sources.spec.ts:24:7 › Data Source Configuration › should create a new JSON data source 
+    [chromium] › tests/e2e/data-sources.spec.ts:56:7 › Data Source Configuration › should test data source connection 
+    [chromium] › tests/e2e/data-sources.spec.ts:77:7 › Data Source Configuration › should display API key configuration 
+    [chromium] › tests/e2e/data-sources.spec.ts:89:7 › Data Source Configuration › should verify multi-tenant data isolation 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:9:7 › Multi-Tenant Isolation › should not expose other tenant data in API responses 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:32:7 › Multi-Tenant Isolation › should not expose tenant in URLs 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:41:7 › Multi-Tenant Isolation › should enforce session isolation 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:63:7 › Multi-Tenant Isolation › should validate user ownership of resources 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:88:7 › Multi-Tenant Isolation › should not expose credentials across tenants 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:109:7 › Multi-Tenant Isolation › should prevent cross-tenant data access via API 
+    [chromium] › tests/e2e/multi-tenant.spec.ts:135:7 › Multi-Tenant Isolation › brand kit and guidelines should be tenant-specific 
+    [firefox] › tests/e2e/agent-api.spec.ts:7:7 › Agent API Endpoints › should accept bearer token authentication 
+    [firefox] › tests/e2e/agent-api.spec.ts:45:7 › Agent API Endpoints › GET /api/agent/generate should be callable 
+    [firefox] › tests/e2e/agent-api.spec.ts:70:7 › Agent API Endpoints › POST /api/agent/queue should queue content 
+    [firefox] › tests/e2e/agent-api.spec.ts:100:7 › Agent API Endpoints › should reject requests without authentication 
+    [firefox] › tests/e2e/agent-api.spec.ts:107:7 › Agent API Endpoints › should reject requests with invalid token 
+    [firefox] › tests/e2e/agent-api.spec.ts:130:7 › Agent API Endpoints › API response should include proper headers 
+    [firefox] › tests/e2e/auth.spec.ts:5:7 › Authentication › should load login page ───────────────
+    [firefox] › tests/e2e/auth.spec.ts:12:7 › Authentication › should login with valid credentials ─
+    [firefox] › tests/e2e/auth.spec.ts:17:7 › Authentication › should maintain session after login ─
+    [firefox] › tests/e2e/auth.spec.ts:23:7 › Authentication › should logout successfully ──────────
+    [firefox] › tests/e2e/auth.spec.ts:30:7 › Authentication › should reject invalid credentials ───
+    [firefox] › tests/e2e/auth.spec.ts:42:7 › Authentication › should require email field ──────────
+    [firefox] › tests/e2e/auth.spec.ts:52:7 › Authentication › should require password field ───────
+    [firefox] › tests/e2e/content-generation.spec.ts:9:7 › Content Generation › should navigate to content page 
+    [firefox] › tests/e2e/content-generation.spec.ts:15:7 › Content Generation › should display content list 
+    [firefox] › tests/e2e/content-generation.spec.ts:24:7 › Content Generation › should create new content 
+    [firefox] › tests/e2e/content-generation.spec.ts:50:7 › Content Generation › should generate AI graphic via Canva 
+    [firefox] › tests/e2e/content-generation.spec.ts:73:7 › Content Generation › should preview generated content 
+    [firefox] › tests/e2e/content-generation.spec.ts:90:7 › Content Generation › should display caption generation options 
+    [firefox] › tests/e2e/content-generation.spec.ts:102:7 › Content Generation › should validate content before publishing 
+    [firefox] › tests/e2e/content-generation.spec.ts:116:7 › Content Generation › should handle content generation errors gracefully 
+    [firefox] › tests/e2e/data-sources.spec.ts:9:7 › Data Source Configuration › should navigate to data sources page 
+    [firefox] › tests/e2e/data-sources.spec.ts:15:7 › Data Source Configuration › should display data sources list 
+    [firefox] › tests/e2e/data-sources.spec.ts:24:7 › Data Source Configuration › should create a new JSON data source 
+    [firefox] › tests/e2e/multi-tenant.spec.ts:9:7 › Multi-Tenant Isolation › should not expose other tenant data in API responses 
+  9 did not run
+  10 passed (2.1m)

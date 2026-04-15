@@ -6,7 +6,10 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
@@ -21,6 +24,7 @@
     "twitter-api-v2": "^1.29.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@tailwindcss/postcss": "^4.2.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "20.19.37",

@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
   const { data: stored } = await supabase()
     .from("linkedin_oauth_state")
-    .select("state")
+    .select("user_id")
     .eq("state", state)
     .single();
 
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     const { sub, name } = await getLinkedInUserInfo(accessToken);
     const expiresAt = expiresIn ? new Date(Date.now() + expiresIn * 1000) : null;
 
-    await upsertLinkedInCredential(sub, name, accessToken, expiresAt);
+    await upsertLinkedInCredential(stored.user_id, sub, name, accessToken, expiresAt);
   } catch (e) {
     const msg = e instanceof Error ? encodeURIComponent(e.message) : "unknown";
     return NextResponse.redirect(`${baseUrl}/admin/linkedin?error=${msg}`);

@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase";
 // GET /api/tiktok/auth — initiate OAuth 2.0 PKCE flow
 export async function GET() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -15,9 +15,10 @@ export async function GET() {
   const state = Buffer.from(JSON.stringify({ ts: Date.now() })).toString("base64url");
   const redirectUri = `${process.env.AUTH_URL}/api/tiktok/callback`;
 
+  // Store user_id in state so callback can associate the credential with this user
   await supabase()
     .from("tiktok_oauth_state")
-    .upsert({ state, code_verifier: codeVerifier }, { onConflict: "state" });
+    .upsert({ state, user_id: session.user.id, code_verifier: codeVerifier }, { onConflict: "state" });
 
   const authUrl = buildTikTokAuthUrl(redirectUri, state, codeChallenge);
   return NextResponse.redirect(authUrl);
@@ -26,10 +27,10 @@ export async function GET() {
 // DELETE /api/tiktok/auth — disconnect TikTok account
 export async function DELETE() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await deleteTikTokCredential();
+  await deleteTikTokCredential(session.user.id);
   return NextResponse.json({ success: true });
 }

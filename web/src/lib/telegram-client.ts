@@ -14,9 +14,9 @@ export async function validateBotToken(botToken: string): Promise<string> {
   return data.result!.username;
 }
 
-// Send a text message to the configured channel. Returns the message_id.
-export async function sendTelegramMessage(content: string): Promise<string> {
-  const cred = await getTelegramCredential();
+// Send a text message to the user's configured channel. Returns the message_id.
+export async function sendTelegramMessage(userId: string, content: string): Promise<string> {
+  const cred = await getTelegramCredential(userId);
   if (!cred) throw new Error("No Telegram bot configured");
 
   const res = await fetch(`${TELEGRAM_API_BASE}/bot${cred.bot_token}/sendMessage`, {
@@ -35,10 +35,10 @@ export async function sendTelegramMessage(content: string): Promise<string> {
   return String(data.result!.message_id);
 }
 
-// Send a photo with a caption to the configured channel. Returns the message_id.
+// Send a photo with a caption to the user's configured channel. Returns the message_id.
 // imagePath must be a readable local file path.
-export async function sendTelegramPhoto(imagePath: string, caption: string): Promise<string> {
-  const cred = await getTelegramCredential();
+export async function sendTelegramPhoto(userId: string, imagePath: string, caption: string): Promise<string> {
+  const cred = await getTelegramCredential(userId);
   if (!cred) throw new Error("No Telegram bot configured");
 
   const imageBuffer = fs.readFileSync(imagePath);

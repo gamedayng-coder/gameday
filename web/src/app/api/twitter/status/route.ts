@@ -5,11 +5,11 @@ import { getTwitterCredential } from "@/lib/twitter-db";
 // GET /api/twitter/status — connection status for the connected Twitter account
 export async function GET() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cred = await getTwitterCredential();
+  const cred = await getTwitterCredential(session.user.id);
   if (!cred) {
     return NextResponse.json({ connected: false });
   }

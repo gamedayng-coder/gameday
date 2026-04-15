@@ -2,21 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { createTwitterPost, getTwitterPosts } from "@/lib/twitter-db";
 
-// GET /api/twitter/posts — list all posts
+// GET /api/twitter/posts — list posts for the current user
 export async function GET() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json(getTwitterPosts());
+  return NextResponse.json(await getTwitterPosts(session.user.id));
 }
 
 // POST /api/twitter/posts — queue a new post (immediate or scheduled)
 // Body: { content: string, posterId?: string, scheduledAt?: string (ISO) }
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -37,6 +37,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid scheduledAt date" }, { status: 400 });
   }
 
-  const post = createTwitterPost(content, posterId, scheduledAt);
+  const post = await createTwitterPost(session.user.id, content, posterId, scheduledAt);
   return NextResponse.json(post, { status: 201 });
 }

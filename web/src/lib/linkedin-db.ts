@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 
 export interface LinkedInCredential {
   id: number;
+  user_id: string;
   linkedin_user_id: string;
   linkedin_name: string;
   access_token: string;
@@ -14,6 +15,7 @@ export type LinkedInPostStatus = "pending" | "published" | "failed" | "cancelled
 
 export interface LinkedInPost {
   id: number;
+  user_id: string;
   content: string;
   poster_id: string | null;
   scheduled_at: string | null;
@@ -24,10 +26,11 @@ export interface LinkedInPost {
   created_at: string;
 }
 
-export async function getLinkedInCredential(): Promise<LinkedInCredential | undefined> {
+export async function getLinkedInCredential(userId: string): Promise<LinkedInCredential | undefined> {
   const { data } = await supabase()
     .from("linkedin_credentials")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -35,29 +38,30 @@ export async function getLinkedInCredential(): Promise<LinkedInCredential | unde
 }
 
 export async function upsertLinkedInCredential(
+  userId: string,
   linkedinUserId: string,
   linkedinName: string,
   accessToken: string,
   expiresAt: Date | null
 ): Promise<LinkedInCredential> {
-  await supabase().from("linkedin_credentials").delete().neq("id", 0);
+  await supabase().from("linkedin_credentials").delete().eq("user_id", userId);
   const { data, error } = await supabase()
     .from("linkedin_credentials")
-    .insert({ linkedin_user_id: linkedinUserId, linkedin_name: linkedinName, access_token: accessToken, expires_at: expiresAt ? expiresAt.toISOString() : null })
+    .insert({ user_id: userId, linkedin_user_id: linkedinUserId, linkedin_name: linkedinName, access_token: accessToken, expires_at: expiresAt ? expiresAt.toISOString() : null })
     .select()
     .single();
   if (error) throw error;
   return data;
 }
 
-export async function deleteLinkedInCredential(): Promise<void> {
-  await supabase().from("linkedin_credentials").delete().neq("id", 0);
+export async function deleteLinkedInCredential(userId: string): Promise<void> {
+  await supabase().from("linkedin_credentials").delete().eq("user_id", userId);
 }
 
-export async function createLinkedInPost(content: string, posterId: string | null, scheduledAt: Date | null): Promise<LinkedInPost> {
+export async function createLinkedInPost(userId: string, content: string, posterId: string | null, scheduledAt: Date | null): Promise<LinkedInPost> {
   const { data, error } = await supabase()
     .from("linkedin_posts")
-    .insert({ content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
+    .insert({ user_id: userId, content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
     .select()
     .single();
   if (error) throw error;
@@ -69,12 +73,18 @@ export async function getLinkedInPostById(id: number): Promise<LinkedInPost | un
   return data ?? undefined;
 }
 
-export async function getLinkedInPosts(limit = 50): Promise<LinkedInPost[]> {
-  const { data, error } = await supabase().from("linkedin_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+export async function getLinkedInPosts(userId: string, limit = 50): Promise<LinkedInPost[]> {
+  const { data, error } = await supabase()
+    .from("linkedin_posts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
   if (error) throw error;
   return data ?? [];
 }
 
+// Returns all due posts across all users (for process-queue cron).
 export async function getDueLinkedInPosts(): Promise<LinkedInPost[]> {
   const now = new Date().toISOString();
   const { data, error } = await supabase()

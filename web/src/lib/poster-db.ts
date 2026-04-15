@@ -5,6 +5,7 @@ export type PosterStatus = "draft" | "approved" | "published" | "failed";
 
 export interface Poster {
   id: string;
+  user_id: string;
   type: PosterType;
   fixture_id: number | null;
   week_start: string | null;
@@ -48,10 +49,10 @@ function flattenPoster(row: Record<string, unknown>): Poster {
   };
 }
 
-export async function createPoster(id: string, type: PosterType, fixtureId: number | null, weekStart: string | null): Promise<Poster> {
+export async function createPoster(userId: string, id: string, type: PosterType, fixtureId: number | null, weekStart: string | null): Promise<Poster> {
   const { data, error } = await supabase()
     .from("posters")
-    .insert({ id, type, fixture_id: fixtureId, week_start: weekStart })
+    .insert({ id, user_id: userId, type, fixture_id: fixtureId, week_start: weekStart })
     .select(POSTER_SELECT)
     .single();
   if (error) throw error;
@@ -64,8 +65,8 @@ export async function getPosterById(id: string): Promise<Poster | undefined> {
   return flattenPoster(data as unknown as Record<string, unknown>);
 }
 
-export async function getPosters(options: { type?: PosterType; status?: PosterStatus; limit?: number } = {}): Promise<Poster[]> {
-  let query = supabase().from("posters").select(POSTER_SELECT).order("created_at", { ascending: false });
+export async function getPosters(userId: string, options: { type?: PosterType; status?: PosterStatus; limit?: number } = {}): Promise<Poster[]> {
+  let query = supabase().from("posters").select(POSTER_SELECT).eq("user_id", userId).order("created_at", { ascending: false });
   if (options.type) query = query.eq("type", options.type);
   if (options.status) query = query.eq("status", options.status);
   if (options.limit) query = query.limit(options.limit);
@@ -97,10 +98,11 @@ export async function markPosterPublished(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function posterExistsForFixture(fixtureId: number, type: PosterType): Promise<boolean> {
+export async function posterExistsForFixture(userId: string, fixtureId: number, type: PosterType): Promise<boolean> {
   const { data } = await supabase()
     .from("posters")
     .select("id")
+    .eq("user_id", userId)
     .eq("fixture_id", fixtureId)
     .eq("type", type)
     .neq("status", "failed")
@@ -108,10 +110,11 @@ export async function posterExistsForFixture(fixtureId: number, type: PosterType
   return (data ?? []).length > 0;
 }
 
-export async function posterExistsForWeek(weekStart: string): Promise<boolean> {
+export async function posterExistsForWeek(userId: string, weekStart: string): Promise<boolean> {
   const { data } = await supabase()
     .from("posters")
     .select("id")
+    .eq("user_id", userId)
     .eq("week_start", weekStart)
     .eq("type", "weekly_schedule")
     .neq("status", "failed")

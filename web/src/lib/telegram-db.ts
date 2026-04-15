@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 
 export interface TelegramCredential {
   id: number;
+  user_id: string;
   bot_token: string;
   chat_id: string;
   bot_username: string | null;
@@ -13,6 +14,7 @@ export type TelegramPostStatus = "pending" | "published" | "failed" | "cancelled
 
 export interface TelegramPost {
   id: number;
+  user_id: string;
   content: string;
   poster_id: string | null;
   scheduled_at: string | null;
@@ -23,35 +25,36 @@ export interface TelegramPost {
   created_at: string;
 }
 
-export async function getTelegramCredential(): Promise<TelegramCredential | undefined> {
+export async function getTelegramCredential(userId: string): Promise<TelegramCredential | undefined> {
   const { data } = await supabase()
     .from("telegram_credentials")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
   return data ?? undefined;
 }
 
-export async function upsertTelegramCredential(botToken: string, chatId: string, botUsername: string | null): Promise<TelegramCredential> {
-  await supabase().from("telegram_credentials").delete().neq("id", 0);
+export async function upsertTelegramCredential(userId: string, botToken: string, chatId: string, botUsername: string | null): Promise<TelegramCredential> {
+  await supabase().from("telegram_credentials").delete().eq("user_id", userId);
   const { data, error } = await supabase()
     .from("telegram_credentials")
-    .insert({ bot_token: botToken, chat_id: chatId, bot_username: botUsername })
+    .insert({ user_id: userId, bot_token: botToken, chat_id: chatId, bot_username: botUsername })
     .select()
     .single();
   if (error) throw error;
   return data;
 }
 
-export async function deleteTelegramCredential(): Promise<void> {
-  await supabase().from("telegram_credentials").delete().neq("id", 0);
+export async function deleteTelegramCredential(userId: string): Promise<void> {
+  await supabase().from("telegram_credentials").delete().eq("user_id", userId);
 }
 
-export async function createTelegramPost(content: string, posterId: string | null, scheduledAt: Date | null): Promise<TelegramPost> {
+export async function createTelegramPost(userId: string, content: string, posterId: string | null, scheduledAt: Date | null): Promise<TelegramPost> {
   const { data, error } = await supabase()
     .from("telegram_posts")
-    .insert({ content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
+    .insert({ user_id: userId, content, poster_id: posterId, scheduled_at: scheduledAt ? scheduledAt.toISOString() : null, status: "pending" })
     .select()
     .single();
   if (error) throw error;
@@ -63,12 +66,18 @@ export async function getTelegramPostById(id: number): Promise<TelegramPost | un
   return data ?? undefined;
 }
 
-export async function getTelegramPosts(limit = 50): Promise<TelegramPost[]> {
-  const { data, error } = await supabase().from("telegram_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+export async function getTelegramPosts(userId: string, limit = 50): Promise<TelegramPost[]> {
+  const { data, error } = await supabase()
+    .from("telegram_posts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
   if (error) throw error;
   return data ?? [];
 }
 
+// Returns all due posts across all users (for process-queue cron).
 export async function getDueTelegramPosts(): Promise<TelegramPost[]> {
   const now = new Date().toISOString();
   const { data, error } = await supabase()

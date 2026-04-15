@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   const { data: stored } = await supabase()
     .from("twitter_oauth_state")
-    .select("code_verifier")
+    .select("user_id, code_verifier")
     .eq("state", state)
     .single();
 
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     const { data: me } = await client.v2.me();
     const expiresAt = expiresIn ? new Date(Date.now() + expiresIn * 1000) : null;
 
-    await upsertTwitterCredential(me.id, me.username, accessToken, refreshToken ?? null, expiresAt);
+    await upsertTwitterCredential(stored.user_id, me.id, me.username, accessToken, refreshToken ?? null, expiresAt);
   } catch (e) {
     const msg = e instanceof Error ? encodeURIComponent(e.message) : "unknown";
     return NextResponse.redirect(`${baseUrl}/admin/twitter?error=${msg}`);

@@ -7,7 +7,7 @@ import { validateBotToken } from "@/lib/telegram-client";
 // Body: { botToken: string, chatId: string }
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const credential = await upsertTelegramCredential(botToken, chatId, botUsername);
+  const credential = await upsertTelegramCredential(session.user.id, botToken, chatId, botUsername);
   return NextResponse.json({
     botUsername: credential.bot_username,
     chatId: credential.chat_id,
@@ -46,10 +46,10 @@ export async function POST(req: NextRequest) {
 // DELETE /api/telegram/auth — disconnect Telegram bot
 export async function DELETE() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await deleteTelegramCredential();
+  await deleteTelegramCredential(session.user.id);
   return NextResponse.json({ success: true });
 }
