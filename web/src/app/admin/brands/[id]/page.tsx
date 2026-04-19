@@ -21,14 +21,20 @@ export default async function BrandDetailPage({ params }: Props) {
   const { id } = await params;
   const userId = session.user.id;
 
-  const [brand, voice, publishingConfig, credentials, templates] =
-    await Promise.all([
-      getBrandById(id, userId),
-      getBrandVoice(id),
-      getBrandPublishingConfig(id),
-      listBrandCredentials(id),
-      listBrandTemplates(id),
-    ]);
+  // Gracefully handle missing DB tables (migrations not yet applied)
+  let brand, voice = null, publishingConfig = null, credentials: Awaited<ReturnType<typeof listBrandCredentials>> = [], templates: Awaited<ReturnType<typeof listBrandTemplates>> = [];
+  try {
+    [brand, voice, publishingConfig, credentials, templates] =
+      await Promise.all([
+        getBrandById(id, userId),
+        getBrandVoice(id),
+        getBrandPublishingConfig(id),
+        listBrandCredentials(id),
+        listBrandTemplates(id),
+      ]);
+  } catch {
+    notFound();
+  }
 
   if (!brand) notFound();
 

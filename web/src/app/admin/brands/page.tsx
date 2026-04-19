@@ -6,6 +6,12 @@ import BrandsClient from "./BrandsClient";
 export default async function BrandsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
-  const brands = await getBrands(session.user.id);
+  // Gracefully handle missing DB tables (migrations not yet applied)
+  let brands: Awaited<ReturnType<typeof getBrands>> = [];
+  try {
+    brands = await getBrands(session.user.id);
+  } catch {
+    // DB schema not initialized — show empty state
+  }
   return <BrandsClient brands={brands} />;
 }

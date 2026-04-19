@@ -7,8 +7,15 @@ export default async function TrainingDataPage({ params }: { params: Promise<{ i
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   const { id } = await params;
-  const brand = await getBrand(id, session.user.id);
+  // Gracefully handle missing DB tables (migrations not yet applied)
+  let brand, items: Awaited<ReturnType<typeof getTrainingData>> = [];
+  try {
+    brand = await getBrand(id, session.user.id);
+    if (!brand) notFound();
+    items = await getTrainingData(id, session.user.id);
+  } catch {
+    notFound();
+  }
   if (!brand) notFound();
-  const items = await getTrainingData(id, session.user.id);
   return <TrainingDataClient brand={brand} items={items} />;
 }

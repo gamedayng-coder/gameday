@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,7 +29,7 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid email or password.");
     } else {
-      router.push("/profile");
+      router.push("/admin/brands");
       router.refresh();
     }
   }
@@ -38,18 +37,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white dark:bg-zinc-950 px-4">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-8">
           Sign in
         </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-300 mb-8">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="text-zinc-900 dark:text-zinc-50 underline underline-offset-2"
-          >
-            Register
-          </Link>
-        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

@@ -86,20 +86,12 @@ export default function Nav() {
               </Link>
             </>
           ) : (
-            <>
-              <Link
-                href="/login"
-                className="text-sm text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="text-sm rounded-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 px-4 py-1.5 font-medium hover:opacity-90 transition-opacity"
-              >
-                Register
-              </Link>
-            </>
+            <Link
+              href="/login"
+              className="text-sm rounded-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 px-4 py-1.5 font-medium hover:opacity-90 transition-opacity"
+            >
+              Sign in
+            </Link>
           )}
         </div>
       </div>
