@@ -16,7 +16,7 @@ export async function createPlatformAccount(brandId: string, formData: FormData)
 
   const now = new Date().toISOString();
   const db = createSupabaseServiceClient();
-  const { data, error } = await db
+  const { error } = await db
     .from('platform_accounts')
     .insert({
       id: randomUUID(),

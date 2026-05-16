@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Brand, BrandProfile } from '../../../../db/schema';
 
 type ProfileField = {

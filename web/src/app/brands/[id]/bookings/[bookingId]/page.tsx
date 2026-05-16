@@ -10,8 +10,8 @@ import {
   updateBookingLineItem,
   deleteBookingLineItem,
   addBookingEvent,
-  ALLOWED_TRANSITIONS,
 } from '../../../../../lib/booking-actions';
+import { ALLOWED_TRANSITIONS } from '../../../../../lib/booking-constants';
 
 export const dynamic = 'force-dynamic';
 

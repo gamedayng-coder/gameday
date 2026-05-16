@@ -55,7 +55,6 @@ export default async function PlatformAccountsPage({ params }: Props) {
         <div className="space-y-2 mb-8">
           {accounts.map((account) => {
             const linkedCred = credentials.find((c) => c.id === account.credential_id);
-            const toggleActive = updatePlatformAccount.bind(null, params.id, account.id);
             const del = deletePlatformAccount.bind(null, params.id, account.id);
             return (
               <div

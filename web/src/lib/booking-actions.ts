@@ -6,15 +6,7 @@ import { randomUUID } from 'crypto';
 import { getUser } from './supabase/server';
 import { createSupabaseServiceClient } from './supabase/service';
 import type { BookingStatus } from '../db/schema';
-
-type AllowedTransitions = Partial<Record<BookingStatus, BookingStatus[]>>;
-
-export const ALLOWED_TRANSITIONS: AllowedTransitions = {
-  pending:   ['confirmed', 'cancelled'],
-  confirmed: ['completed', 'cancelled', 'disputed'],
-  completed: ['disputed', 'refunded'],
-  // cancelled, refunded, disputed: terminal — no webapp transitions
-};
+import { ALLOWED_TRANSITIONS } from './booking-constants';
 
 export async function updateBookingStatus(
   brandId: string,

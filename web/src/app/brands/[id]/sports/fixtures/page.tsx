@@ -35,7 +35,7 @@ export default async function FixturesPage({ params, searchParams }: Props) {
 
   const statusFilter = (searchParams.status as SportsFixtureStatus | undefined) ?? 'scheduled';
 
-  const [{ data: brandData }, { data: fixturesData }, { data: competitionsData }] = await Promise.all([
+  const [{ data: brandData }, { data: fixturesData }] = await Promise.all([
     db.from('brands').select('id, name').eq('id', params.id).maybeSingle(),
     db.from('sports_fixtures')
       .select(`
@@ -47,16 +47,12 @@ export default async function FixturesPage({ params, searchParams }: Props) {
       .eq('brand_id', params.id)
       .eq('status', statusFilter)
       .order('kickoff_at', { ascending: statusFilter === 'scheduled' || statusFilter === 'live' }),
-      db.from('sports_competitions')
-      .select('id, name')
-      .eq('brand_id', params.id)
-      .order('name'),
+
   ]);
 
   if (!brandData) redirect('/brands');
 
   const fixtures = (fixturesData ?? []) as FixtureRow[];
-  const competitions = (competitionsData ?? []) as { id: string; name: string }[];
 
   return (
     <div className="px-8 py-8 max-w-4xl">

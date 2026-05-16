@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getUser } from '../../../../../../lib/supabase/server';
 import { createSupabaseServiceClient } from '../../../../../../lib/supabase/service';
 import type { SocialInteraction, ReplyDraft, SocialInteractionStatus } from '../../../../../../db/schema';
-import { updateInteractionStatus, linkInteractionToThread } from '../../../../../../lib/social-interaction-actions';
+import { updateInteractionStatus } from '../../../../../../lib/social-interaction-actions';
 import { createReplyDraft } from '../../../../../../lib/reply-draft-actions';
 
 export const dynamic = 'force-dynamic';
