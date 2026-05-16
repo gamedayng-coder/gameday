@@ -1,86 +1,71 @@
-import { auth } from "@/auth";
-import { getBrandById, updateBrand, deleteBrand, Brand } from "@/lib/brand-db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { getUser } from '../../../../lib/supabase/server';
+import { createSupabaseServiceClient } from '../../../../lib/supabase/service';
+import { Brand } from '../../../../db/schema';
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: { id: string } };
 
-function isInternalRequest(req: Request): boolean {
+function isInternalRequest(req: NextRequest): boolean {
   const key = process.env.INTERNAL_API_KEY;
-  return !!key && req.headers.get("x-internal-key") === key;
+  return !!key && req.headers.get('x-internal-key') === key;
 }
 
 /** GET /api/brands/[id] — full brand record including brief fields. */
-export async function GET(req: Request, { params }: Params) {
-  const session = await auth();
-  if (!session?.user?.id && !isInternalRequest(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest, { params }: Params) {
+  const user = await getUser();
+  if (!user && !isInternalRequest(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const db = createSupabaseServiceClient();
+  const { data, error } = await db
+    .from('brands')
+    .select('*')
+    .eq('id', params.id)
+    .maybeSingle();
 
-  // Internal agents can access any brand (no user_id check)
-  if (isInternalRequest(req)) {
-    const { supabase } = await import("@/lib/supabase");
-    const { data, error } = await supabase()
-      .from("brands")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    if (!data) return NextResponse.json({ error: "Brand not found" }, { status: 404 });
-    return NextResponse.json(data);
-  }
-
-  const brand = await getBrandById(id, session!.user!.id!);
-  if (!brand) return NextResponse.json({ error: "Brand not found" }, { status: 404 });
-  return NextResponse.json(brand);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!data) return NextResponse.json({ error: 'Brand not found' }, { status: 404 });
+  return NextResponse.json(data as Brand);
 }
 
 /** PATCH /api/brands/[id] — update brand name and/or brief fields. */
-export async function PATCH(req: Request, { params }: Params) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function PATCH(req: NextRequest, { params }: Params) {
+  const user = await getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { id } = await params;
-  const body = await req.json() as Partial<
-    Pick<
-      Brand,
-      | "name"
-      | "core_values"
-      | "content_themes"
-      | "objectives"
-      | "dislikes"
-      | "tone_of_voice"
-      | "competitors"
-      | "products_services"
-      | "target_audience"
-    >
-  >;
+  const body = await req.json() as Partial<Omit<Brand, 'id' | 'created_at' | 'updated_at'>>;
 
-  const allowed = [
-    "name", "core_values", "content_themes", "objectives", "dislikes",
-    "tone_of_voice", "competitors", "products_services", "target_audience",
-  ] as const;
-  const patch: Partial<typeof body> = {};
+  // Only allow updatable fields
+  const allowed: (keyof typeof body)[] = [
+    'name', 'core_values', 'content_themes', 'objectives', 'dislikes',
+    'tone_of_voice', 'competitors', 'products_services', 'target_audience',
+  ];
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   for (const key of allowed) {
-    if (key in body) patch[key] = body[key] as never;
+    if (key in body) patch[key] = body[key];
   }
 
-  const brand = await updateBrand(id, session.user.id!, patch);
-  if (!brand) return NextResponse.json({ error: "Brand not found" }, { status: 404 });
-  return NextResponse.json(brand);
+  const db = createSupabaseServiceClient();
+  const { data, error } = await db
+    .from('brands')
+    .update(patch)
+    .eq('id', params.id)
+    .select('*')
+    .maybeSingle();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!data) return NextResponse.json({ error: 'Brand not found' }, { status: 404 });
+  return NextResponse.json(data as Brand);
 }
 
-/** DELETE /api/brands/[id] — delete brand (cascades all related data). */
-export async function DELETE(_req: Request, { params }: Params) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+/** DELETE /api/brands/[id] — delete brand and cascade credentials. */
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const user = await getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { id } = await params;
-  await deleteBrand(id, session.user.id!);
+  const db = createSupabaseServiceClient();
+  const { error } = await db.from('brands').delete().eq('id', params.id);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return new NextResponse(null, { status: 204 });
 }

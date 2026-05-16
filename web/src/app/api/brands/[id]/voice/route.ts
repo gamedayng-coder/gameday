@@ -1,62 +1,72 @@
-import { auth } from "@/auth";
-import {
-  getBrandById,
-  getBrandVoice,
-  upsertBrandVoice,
-  BrandVoice,
-} from "@/lib/brand-db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
+import { getUser } from '../../../../../lib/supabase/server';
+import { createSupabaseServiceClient } from '../../../../../lib/supabase/service';
+import { BrandVoice } from '../../../../../db/schema';
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: { id: string } };
 
-function isInternalRequest(req: Request): boolean {
+const VOICE_FIELDS = [
+  'tone',
+  'style',
+  'platform_guidelines',
+  'dos_and_donts',
+  'sample_copy',
+  'competitor_differentiation',
+] as const;
+
+function isInternalRequest(req: NextRequest): boolean {
   const key = process.env.INTERNAL_API_KEY;
-  return !!key && req.headers.get("x-internal-key") === key;
+  return !!key && req.headers.get('x-internal-key') === key;
 }
 
-/** GET /api/brands/[id]/voice */
-export async function GET(req: Request, { params }: Params) {
-  const session = await auth();
-  if (!session?.user?.id && !isInternalRequest(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+/** GET /api/brands/[id]/voice — return voice doc, or 404 if not yet created. */
+export async function GET(req: NextRequest, { params }: Params) {
+  const user = await getUser();
+  if (!user && !isInternalRequest(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const db = createSupabaseServiceClient();
+  const { data, error } = await db
+    .from('brand_voice')
+    .select('*')
+    .eq('brand_id', params.id)
+    .maybeSingle();
 
-  // Verify ownership (skip for internal)
-  if (!isInternalRequest(req)) {
-    const brand = await getBrandById(id, session!.user!.id!);
-    if (!brand) return NextResponse.json({ error: "Brand not found" }, { status: 404 });
-  }
-
-  const voice = await getBrandVoice(id);
-  if (!voice) return NextResponse.json({ error: "Voice document not found" }, { status: 404 });
-  return NextResponse.json(voice);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!data) return NextResponse.json({ error: 'Voice document not found' }, { status: 404 });
+  return NextResponse.json(data as BrandVoice);
 }
 
 /** PATCH /api/brands/[id]/voice — upsert voice document fields. */
-export async function PATCH(req: Request, { params }: Params) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PATCH(req: NextRequest, { params }: Params) {
+  const user = await getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const body = await req.json() as Partial<Omit<BrandVoice, 'id' | 'brand_id' | 'created_at' | 'updated_at'>>;
+
+  const patch: Record<string, unknown> = {
+    brand_id: params.id,
+    updated_at: new Date().toISOString(),
+  };
+  for (const field of VOICE_FIELDS) {
+    if (field in body) patch[field] = body[field];
   }
 
-  const { id } = await params;
-  const brand = await getBrandById(id, session.user.id!);
-  if (!brand) return NextResponse.json({ error: "Brand not found" }, { status: 404 });
+  const db = createSupabaseServiceClient();
 
-  const body = await req.json() as Partial<
-    Pick<
-      BrandVoice,
-      | "tone"
-      | "style"
-      | "platform_guidelines"
-      | "dos_and_donts"
-      | "sample_copy"
-      | "competitor_differentiation"
-    >
-  >;
+  // Verify brand exists
+  const { data: brand } = await db.from('brands').select('id').eq('id', params.id).maybeSingle();
+  if (!brand) return NextResponse.json({ error: 'Brand not found' }, { status: 404 });
 
-  const voice = await upsertBrandVoice(id, body);
-  return NextResponse.json(voice);
+  // Upsert — insert on first call, update on subsequent (conflict on brand_id)
+  const { data, error } = await db
+    .from('brand_voice')
+    .upsert({ id: randomUUID(), ...patch }, { onConflict: 'brand_id' })
+    .select('*')
+    .maybeSingle();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data as BrandVoice);
 }

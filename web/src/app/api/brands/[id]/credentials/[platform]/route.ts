@@ -1,20 +1,21 @@
-import { auth } from "@/auth";
-import { getBrandById, deleteBrandCredential } from "@/lib/brand-db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { getUser } from '../../../../../../lib/supabase/server';
+import { createSupabaseServiceClient } from '../../../../../../lib/supabase/service';
 
-type Params = { params: Promise<{ id: string; platform: string }> };
+type Params = { params: { id: string; platform: string } };
 
 /** DELETE /api/brands/[id]/credentials/[platform] — remove a credential. */
-export async function DELETE(_req: Request, { params }: Params) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const user = await getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { id, platform } = await params;
-  const brand = await getBrandById(id, session.user.id!);
-  if (!brand) return NextResponse.json({ error: "Brand not found" }, { status: 404 });
+  const db = createSupabaseServiceClient();
+  const { error } = await db
+    .from('brand_credentials')
+    .delete()
+    .eq('brand_id', params.id)
+    .eq('platform', params.platform);
 
-  await deleteBrandCredential(id, platform);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return new NextResponse(null, { status: 204 });
 }

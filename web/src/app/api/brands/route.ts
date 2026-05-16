@@ -1,29 +1,48 @@
-import { auth } from "@/auth";
-import { getBrands, createBrand, deleteBrand } from "@/lib/training-data-db";
-import { NextResponse } from "next/server";
-import { randomUUID } from "crypto";
+import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
+import { getUser } from '../../../lib/supabase/server';
+import { createSupabaseServiceClient } from '../../../lib/supabase/service';
+import { Brand } from '../../../db/schema';
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  return NextResponse.json(await getBrands(session.user.id));
+function isInternalRequest(req: NextRequest): boolean {
+  const key = process.env.INTERNAL_API_KEY;
+  return !!key && req.headers.get('x-internal-key') === key;
 }
 
-export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+/** GET /api/brands — list all brands (id, name, created_at, updated_at only). */
+export async function GET(req: NextRequest) {
+  const user = await getUser();
+  if (!user && !isInternalRequest(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const db = createSupabaseServiceClient();
+  const { data, error } = await db
+    .from('brands')
+    .select('id, name, created_at, updated_at')
+    .order('name');
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data ?? []);
+}
+
+/** POST /api/brands — create a new brand. */
+export async function POST(req: NextRequest) {
+  const user = await getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const body = await req.json() as { name?: string };
-  if (!body.name?.trim()) return NextResponse.json({ error: "name is required" }, { status: 400 });
-  const brand = await createBrand(randomUUID(), session.user.id, body.name.trim());
-  return NextResponse.json(brand, { status: 201 });
-}
+  if (!body.name?.trim()) {
+    return NextResponse.json({ error: '`name` is required' }, { status: 400 });
+  }
 
-export async function DELETE(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
-  await deleteBrand(id, session.user.id);
-  return NextResponse.json({ ok: true });
+  const db = createSupabaseServiceClient();
+  const { data, error } = await db
+    .from('brands')
+    .insert({ id: randomUUID(), name: body.name.trim() })
+    .select('*')
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data as Brand, { status: 201 });
 }
