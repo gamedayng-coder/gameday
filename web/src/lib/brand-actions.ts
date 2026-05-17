@@ -6,6 +6,29 @@ import { getUser } from './supabase/server';
 import { createSupabaseServiceClient } from './supabase/service';
 import { randomUUID } from 'crypto';
 
+function toBaseSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    || 'brand';
+}
+
+async function generateUniqueSlug(db: ReturnType<typeof createSupabaseServiceClient>, name: string): Promise<string> {
+  const base = toBaseSlug(name);
+  const { data: existing } = await db
+    .from('brands')
+    .select('slug')
+    .like('slug', `${base}%`);
+
+  const taken = new Set((existing ?? []).map((r: { slug: string }) => r.slug));
+  if (!taken.has(base)) return base;
+
+  let suffix = 2;
+  while (taken.has(`${base}-${suffix}`)) suffix++;
+  return `${base}-${suffix}`;
+}
+
 export async function createBrand(formData: FormData) {
   const user = await getUser();
   if (!user) redirect('/login');
@@ -14,9 +37,10 @@ export async function createBrand(formData: FormData) {
   if (!name) return;
 
   const db = createSupabaseServiceClient();
+  const slug = await generateUniqueSlug(db, name);
   const { data, error } = await db
     .from('brands')
-    .insert({ id: randomUUID(), name })
+    .insert({ id: randomUUID(), name, slug })
     .select('id')
     .single();
 
@@ -91,10 +115,11 @@ export async function createBrandWithSetup(formData: FormData) {
 
   const db = createSupabaseServiceClient();
   const brandId = randomUUID();
+  const slug = await generateUniqueSlug(db, name);
 
   const { error: brandError } = await db
     .from('brands')
-    .insert({ id: brandId, name });
+    .insert({ id: brandId, name, slug });
   if (brandError) throw new Error(brandError.message);
 
   if (industry || website) {
